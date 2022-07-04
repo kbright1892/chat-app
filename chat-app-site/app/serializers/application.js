@@ -1,3 +1,4 @@
-import JSONAPISerializer from '@ember-data/serializer/json-api';
+import DS from 'ember-data';
+import MongoDB from 'ember-blueprint-data/mixins/serializers/mongodb';
 
-export default class ApplicationSerializer extends JSONAPISerializer {}
+export default DS.RESTSerializer.extend(MongoDB, {});

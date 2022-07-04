@@ -1,3 +1,4 @@
 module.exports = {
-  name : ''
+  name : 'chat-app',
+  hostname: 'http://localhost:8080'
 };

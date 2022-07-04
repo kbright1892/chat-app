@@ -15,7 +15,7 @@
     }
   });
 });
-;define("chat-app-site/adapters/application", ["exports", "@ember-data/adapter/json-api"], function (_exports, _jsonApi) {
+;define("chat-app-site/adapters/application", ["exports", "@ember-data/adapter/rest"], function (_exports, _rest) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -25,15 +25,13 @@
 
   function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-  class ApplicationAdapter extends _jsonApi.default {
+  class ApplicationAdapter extends _rest.default {
     constructor() {
       super(...arguments);
 
-      _defineProperty(this, "namespace", 'api');
-    }
+      _defineProperty(this, "host", 'http://localhost:8080');
 
-    buildURL() {
-      return `${super.buildURL(...arguments)}.json`;
+      _defineProperty(this, "namespace", 'api');
     }
 
   }
@@ -757,7 +755,7 @@
     }
   });
 });
-;define("chat-app-site/serializers/application", ["exports", "@ember-data/serializer/json-api"], function (_exports, _jsonApi) {
+;define("chat-app-site/serializers/application", ["exports", "ember-data", "ember-blueprint-data/mixins/serializers/mongodb"], function (_exports, _emberData, _mongodb) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -765,9 +763,9 @@
   });
   _exports.default = void 0;
 
-  class ApplicationSerializer extends _jsonApi.default {}
+  var _default = _emberData.default.RESTSerializer.extend(_mongodb.default, {});
 
-  _exports.default = ApplicationSerializer;
+  _exports.default = _default;
 });
 ;define("chat-app-site/serializers/resource-stat", ["exports", "ember-blueprint-data/serializers/resource-stat"], function (_exports, _resourceStat) {
   "use strict";

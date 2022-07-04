@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@onehilltech/blueprint": "^4.65.11",
+    "@onehilltech/blueprint-mongodb": "^4.65.12",
     "pug": "^2.0.3"
   },
   "license": "",

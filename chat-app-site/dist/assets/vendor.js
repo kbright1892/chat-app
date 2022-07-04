@@ -99883,6 +99883,831 @@ require('@ember/-internals/bootstrap')
   var _default = GlimmerComponent;
   _exports.default = _default;
 });
+;define("ember-blueprint-data/-private/actions/search", ["exports", "@ember/debug", "ember-blueprint-data/-private/actions/serializer-response", "ember-blueprint-data/-private/actions/serializers"], function (_exports, _debug, _serializerResponse, _serializers) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = _default;
+
+  function _default(adapter, store, modelName, query, recordArray, options, directives) {
+    let modelClass = store.modelFor(modelName); // adapter.search needs the class
+
+    let promise;
+    let createRecordArray = adapter.search.length > 3 || adapter.search.wrappedFunction && adapter.search.wrappedFunction.length > 3;
+
+    if (createRecordArray) {
+      recordArray = recordArray || store.recordArrayManager.createAdapterPopulatedRecordArray(modelName, query);
+      promise = Promise.resolve().then(() => adapter.search(store, modelClass, query, recordArray, options, directives));
+    } else {
+      promise = Promise.resolve().then(() => adapter.search(store, modelClass, query));
+    } //let label = `DS: Handle Adapter#search of ${modelName}`;
+    //promise = guardDestroyedStore(promise, store, label);
+
+
+    return promise.then(adapterPayload => {
+      //let serializerToken = heimdall.start('initial-serializerFor-lookup');
+      let serializer = (0, _serializers.serializerForAdapter)(store, adapter, modelName); //heimdall.stop(serializerToken);
+      //let normalizeToken = heimdall.start('finders#_query::normalizeResponseHelper');
+
+      let payload = (0, _serializerResponse.normalizeResponseHelper)(serializer, store, modelClass, adapterPayload, null, 'query'); //heimdall.stop(normalizeToken);
+
+      let internalModels = store._push(payload);
+
+      (true && !(Array.isArray(internalModels)) && (0, _debug.assert)('The response to store.query is expected to be an array but it was a single record. Please wrap your response in an array or use `store.queryRecord` to query for a single record.', Array.isArray(internalModels)));
+
+      if (recordArray) {
+        recordArray._setInternalModels(internalModels, payload);
+      } else {
+        recordArray = store.recordArrayManager.createAdapterPopulatedRecordArray(modelName, query, internalModels, payload);
+      }
+
+      return recordArray;
+    }, null, `DS: Extract payload of search ${modelName}`);
+  }
+});
+;define("ember-blueprint-data/-private/actions/serializer-response", ["exports", "@ember/debug"], function (_exports, _debug) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.normalizeResponseHelper = normalizeResponseHelper;
+  _exports.validateDocumentStructure = validateDocumentStructure;
+
+  /*
+    This is a helper method that validates a JSON API top-level document
+    The format of a document is described here:
+    http://jsonapi.org/format/#document-top-level
+    @method validateDocumentStructure
+    @param {Object} doc JSON API document
+    @return {array} An array of errors found in the document structure
+  */
+  function validateDocumentStructure(doc) {
+    let errors = [];
+
+    if (!doc || typeof doc !== 'object') {
+      errors.push('Top level of a JSON API document must be an object');
+    } else {
+      if (!('data' in doc) && !('errors' in doc) && !('meta' in doc)) {
+        errors.push('One or more of the following keys must be present: "data", "errors", "meta".');
+      } else {
+        if ('data' in doc && 'errors' in doc) {
+          errors.push('Top level keys "errors" and "data" cannot both be present in a JSON API document');
+        }
+      }
+
+      if ('data' in doc) {
+        if (!(doc.data === null || Array.isArray(doc.data) || typeof doc.data === 'object')) {
+          errors.push('data must be null, an object, or an array');
+        }
+      }
+
+      if ('meta' in doc) {
+        if (typeof doc.meta !== 'object') {
+          errors.push('meta must be an object');
+        }
+      }
+
+      if ('errors' in doc) {
+        if (!Array.isArray(doc.errors)) {
+          errors.push('errors must be an array');
+        }
+      }
+
+      if ('links' in doc) {
+        if (typeof doc.links !== 'object') {
+          errors.push('links must be an object');
+        }
+      }
+
+      if ('jsonapi' in doc) {
+        if (typeof doc.jsonapi !== 'object') {
+          errors.push('jsonapi must be an object');
+        }
+      }
+
+      if ('included' in doc) {
+        if (typeof doc.included !== 'object') {
+          errors.push('included must be an array');
+        }
+      }
+    }
+
+    return errors;
+  }
+  /*
+    This is a helper method that always returns a JSON-API Document.
+    @method normalizeResponseHelper
+    @param {DS.Serializer} serializer
+    @param {DS.Store} store
+    @param {subclass of DS.Model} modelClass
+    @param {Object} payload
+    @param {String|Number} id
+    @param {String} requestType
+    @return {Object} JSON-API Document
+  */
+
+
+  function normalizeResponseHelper(serializer, store, modelClass, payload, id, requestType) {
+    let normalizedResponse = serializer.normalizeResponse(store, modelClass, payload, id, requestType);
+    let validationErrors = [];
+
+    if (true
+    /* DEBUG */
+    ) {
+      validationErrors = validateDocumentStructure(normalizedResponse);
+    }
+
+    (true && !(validationErrors.length === 0) && (0, _debug.assert)(`normalizeResponse must return a valid JSON API document:\n\t* ${validationErrors.join('\n\t* ')}`, validationErrors.length === 0));
+    return normalizedResponse;
+  }
+});
+;define("ember-blueprint-data/-private/actions/serializers", ["exports"], function (_exports) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.serializerForAdapter = serializerForAdapter;
+
+  function serializerForAdapter(store, adapter, modelName) {
+    let serializer = adapter.serializer;
+
+    if (serializer === undefined) {
+      serializer = store.serializerFor(modelName);
+    }
+
+    if (serializer === null || serializer === undefined) {
+      serializer = {
+        extract(store, type, payload) {
+          return payload;
+        }
+
+      };
+    }
+
+    return serializer;
+  }
+});
+;define("ember-blueprint-data/-private/adapters/rest", ["exports"], function (_exports) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+  var _default = {
+    buildQuery(snapshot) {
+      let query = this._super(...arguments);
+
+      const {
+        adapterOptions
+      } = snapshot;
+
+      if (adapterOptions) {
+        // Handle the directives placed under the adapter options.
+        let directives = {};
+
+        if (adapterOptions.populate) {
+          directives.populate = true;
+        }
+
+        if (Object.keys(directives).length) {
+          query._ = directives;
+        }
+      }
+
+      return query;
+    },
+
+    search(store, type, query, recordArray, options, directives) {
+      const {
+        adapterOptions
+      } = options;
+      let url = this.buildURL(type.modelName, null, null, 'search', query);
+      url += '/search';
+      return this.ajax(url, 'POST', {
+        data: {
+          search: {
+            query,
+            options: adapterOptions,
+            _: directives
+          }
+        }
+      });
+    },
+
+    urlForSearch(query, modelName) {
+      return this._buildURL(modelName);
+    },
+
+    buildURL(modelName, id, snapshot, requestType, query) {
+      switch (requestType) {
+        case 'search':
+          return this.urlForSearch(query, modelName);
+
+        default:
+          return this._super(...arguments);
+      }
+    }
+
+  };
+  _exports.default = _default;
+});
+;define("ember-blueprint-data/-private/model/changed-attributes", ["exports", "@ember/polyfills"], function (_exports, _polyfills) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  /**
+   * Polyfill for adding change belongsTo relationships to the changed attributes. This
+   * answer was adapted from:
+   *
+   *   https://github.com/emberjs/data/issues/3045#issuecomment-336649072
+   */
+  var _default = {
+    // this could break at the drop of a hat, so we'll want to test it thoroughly
+    changedAttributes() {
+      const attributes = this._super(...arguments);
+
+      const relationships = {}; // check relationships
+
+      this.eachRelationship((name, meta) => {
+        if (meta.kind === 'belongsTo') {
+          let before = this.get(`_internalModel._relationships.initializedRelationships.${name}.canonicalState.id`);
+          let now = this.get(`${name}.id`);
+
+          if (before !== now) {
+            relationships[name] = [before, now];
+          }
+        }
+      });
+      return (0, _polyfills.merge)(attributes, relationships);
+    }
+
+  };
+  _exports.default = _default;
+});
+;define("ember-blueprint-data/-private/store/search", ["exports", "ember-data", "@ember/debug", "@ember/utils", "ember-blueprint-data/-private/actions/search"], function (_exports, _emberData, _debug, _utils, _search2) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  /**
+   * Helper function to create an instance of a PromiseArray.
+   *
+   * @param promise
+   * @param label
+   */
+  function promiseArray(promise, label) {
+    return _emberData.default.PromiseArray.create({
+      promise: Promise.resolve(promise, label)
+    });
+  }
+
+  var _default = {
+    /**
+     * Execute a search operation on the server.
+     *
+     * @param modelName
+     * @param query
+     * @param options
+     * @param directives
+     */
+    search(modelName, query, options, directives) {
+      (true && !((0, _utils.isPresent)(modelName)) && (0, _debug.assert)(`You need to pass a model name to the store's search method`, (0, _utils.isPresent)(modelName)));
+      (true && !(query) && (0, _debug.assert)(`You need to pass a query hash to the store's search method`, query));
+      (true && !(typeof modelName === 'string') && (0, _debug.assert)(`Passing classes to store methods has been removed. Please pass a dasherized string instead of ${modelName}`, typeof modelName === 'string'));
+      let adapterOptionsWrapper = {};
+
+      if (options && options.adapterOptions) {
+        adapterOptionsWrapper.adapterOptions = options.adapterOptions;
+      }
+
+      let normalizedModelName = _emberData.default.normalizeModelName(modelName);
+
+      return this._search(normalizedModelName, query, null, adapterOptionsWrapper, directives);
+    },
+
+    _search(modelName, query, array, options, directives) {
+      //let token = heimdall.start ('store._search');
+      (true && !((0, _utils.isPresent)(modelName)) && (0, _debug.assert)(`You need to pass a model name to the store's query method`, (0, _utils.isPresent)(modelName)));
+      (true && !(query) && (0, _debug.assert)(`You need to pass a query hash to the store's query method`, query));
+      (true && !(typeof modelName === 'string') && (0, _debug.assert)(`Passing classes to store methods has been removed. Please pass a dasherized string instead of ${modelName}`, typeof modelName === 'string')); //let modelToken = heimdall.start('initial-modelFor-lookup');
+      //heimdall.stop(modelToken);
+      //let adapterToken = heimdall.start('initial-adapterFor-lookup');
+
+      let adapter = this.adapterFor(modelName); //heimdall.stop(adapterToken);
+
+      (true && !(adapter) && (0, _debug.assert)(`You tried to load a query but you have no adapter (for ${modelName})`, adapter));
+      (true && !(typeof adapter.query === 'function') && (0, _debug.assert)(`You tried to load a query but your adapter does not implement 'query'`, typeof adapter.query === 'function'));
+      return promiseArray((0, _search2.default)(adapter, this, modelName, query, array, options, directives));
+    }
+
+  };
+  _exports.default = _default;
+});
+;define("ember-blueprint-data/index", ["exports", "ember-data", "ember-blueprint-data/resource", "ember-blueprint-data/resource-stat", "ember-blueprint-data/serialize-and-push"], function (_exports, _emberData, _resource, _resourceStat, _serializeAndPush) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "ResourceModel", {
+    enumerable: true,
+    get: function () {
+      return _resource.default;
+    }
+  });
+  _exports.default = void 0;
+  Object.defineProperty(_exports, "serializeAndPush", {
+    enumerable: true,
+    get: function () {
+      return _serializeAndPush.default;
+    }
+  });
+  _emberData.default.Resource = _resource.default;
+  _emberData.default.ResourceStat = _resourceStat.default;
+  var _default = _emberData.default;
+  _exports.default = _default;
+});
+;define("ember-blueprint-data/initializers/ember-blueprint-data", ["exports", "ember-data", "ember-blueprint-data/-private/store/search", "ember-blueprint-data/-private/adapters/rest", "ember-blueprint-data/-private/model/changed-attributes"], function (_exports, _emberData, _search, _rest, _changedAttributes) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+  _exports.initialize = initialize;
+
+  function initialize() {
+    _emberData.default.Store.reopen(_search.default);
+
+    _emberData.default.RESTAdapter.reopen(_rest.default);
+
+    _emberData.default.Model.reopen(_changedAttributes.default);
+  }
+
+  var _default = {
+    initialize
+  };
+  _exports.default = _default;
+});
+;define("ember-blueprint-data/mixins/serializers/mongodb", ["exports", "@ember/object/mixin", "@ember/string", "@ember/utils", "@ember/object", "ember-inflector"], function (_exports, _mixin, _string, _utils, _object, _emberInflector) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _default = _mixin.default.create({
+    primaryKey: '_id',
+
+    /**
+     * Get the key for an attribute by converting from underscores to
+     * camel case.
+     *
+     * @param key
+     * @return {*}
+     */
+    keyForAttribute: function (key) {
+      return (0, _string.underscore)(key);
+    },
+
+    /**
+     * Get the key for an relationship by converting from underscores to
+     * camel case.
+     *
+     * @param key
+     * @return {*}
+     */
+    keyForRelationship: function (key) {
+      return (0, _string.underscore)(key);
+    },
+
+    /**
+     * Serialize an attribute. Be default, we only serialize attributes that have changed.
+     *
+     * @param snapshot
+     * @param json
+     * @param key
+     * @param attribute
+     * @return {*}
+     */
+    serializeAttribute(snapshot, json, key, attribute) {
+      const {
+        options: {
+          serialize
+        },
+        isFragment
+      } = attribute;
+      const changed = snapshot.changedAttributes();
+
+      if (serialize === 'always' || serialize !== false && (isFragment || (0, _utils.isPresent)(changed[key]))) {
+        this._super(...arguments);
+      }
+
+      if (isFragment && serialize !== false) {
+        // When dealing with a fragment, we delete the value if there is no
+        // serialized data. Otherwise, we end up with a bunch of empty nested
+        // objects.
+        let payloadKey = this._getMappedKey(key, snapshot.type);
+
+        if (payloadKey === key && this.keyForAttribute) {
+          payloadKey = this.keyForAttribute(key, 'serialize');
+        }
+
+        let payload = json[payloadKey];
+
+        if ((0, _utils.isNone)(payload) || (0, _utils.isPresent)(payload) && (0, _utils.isEmpty)(Object.keys(payload))) {
+          delete json[payloadKey];
+        }
+      }
+    },
+
+    /**
+     * Serialize a belongs to relationship. We only serialize the relationship if there
+     * is a change.
+     *
+     * @param snapshot
+     * @param json
+     * @param relationship
+     */
+    serializeBelongsTo(snapshot, json, relationship) {
+      const {
+        options: {
+          serialize
+        }
+      } = relationship;
+
+      if (serialize !== false) {
+        let key = relationship.key;
+        let belongsTo = snapshot.belongsTo(key);
+        key = this.keyForRelationship ? this.keyForRelationship(key, "belongsTo", "serialize") : key;
+
+        if (belongsTo === null) {
+          json[key] = null;
+        } else if (!(0, _utils.isNone)(belongsTo)) {
+          json[key] = belongsTo.id;
+        }
+      }
+    },
+
+    /**
+     * Serialize the hasMany relationship in a model.
+     *
+     * @param snapshot
+     * @param json
+     * @param relationship
+     */
+    serializeHasMany(snapshot, json, relationship) {
+      const {
+        options: {
+          serialize
+        }
+      } = relationship;
+
+      if (serialize !== false) {
+        if (serialize === 'embed') {
+          // We are going to embed each of the documents instead of only including their
+          // id when we serialize them.
+          throw new Error('We do not support embedding hasMany relationships.');
+        } else {
+          // The documents are not embedded. This means we fallback to the default behavior
+          // of has many relationships where we only include the ids.
+          this._super(...arguments);
+        }
+      }
+    },
+
+    normalizeSingleResponse(store, primaryModelClass, payload, id, requestType) {
+      // Let the base class create the default response.
+      payload = this._normalizePayload(store, payload);
+      return this._super(store, primaryModelClass, payload, id, requestType);
+    },
+
+    normalizeArrayResponse(store, primaryModelClass, payload, id, requestType) {
+      payload = this._normalizePayload(store, payload);
+      return this._super(store, primaryModelClass, payload, id, requestType);
+    },
+
+    /**
+     * Normalize a query record response by converting the plural envelope to a
+     * singular envelope.
+     *
+     * @param store
+     * @param primaryModelClass
+     * @param payload
+     * @param id
+     * @param requestType
+     * @return {*}
+     */
+    normalizeQueryRecordResponse(store, primaryModelClass, payload, id, requestType) {
+      let plural = (0, _emberInflector.pluralize)(primaryModelClass.modelName);
+      let singular = (0, _emberInflector.singularize)(primaryModelClass.modelName);
+
+      if ((0, _utils.isPresent)(payload[plural])) {
+        let [value] = payload[plural];
+
+        if ((0, _utils.isPresent)(value)) {
+          payload[singular] = value;
+        }
+
+        delete payload[plural];
+      }
+
+      return this._super(store, primaryModelClass, payload, id, requestType);
+    },
+
+    /**
+     * Normalize the payload for processing.
+     *
+     * @param store
+     * @param payload
+     */
+    _normalizePayload(store, payload) {
+      let keys = Object.keys(payload);
+      let references = {};
+      keys.forEach(key => {
+        const modelName = this.modelNameFromPayloadKey(key);
+        const Model = store.modelFor(modelName); // We only care about the relationships in for for this model at this point. We need to
+        // flatten those that are objects in the payload into reference ids.
+
+        let values = payload[key];
+        Model.eachRelationship(relationshipName => {
+          let relationship = Model.relationshipsByName.get(relationshipName);
+          let relationshipModel = store.modelFor(relationship.type);
+          let referencesName = (0, _emberInflector.pluralize)(relationship.type);
+          let serializer = store.serializerFor(relationship.type);
+          let primaryKey = serializer.primaryKey;
+          let relationshipKey = serializer.keyForRelationship(relationship.key, relationship, 'deserialize');
+          let hasTypeAttribute = modelHasAttributeOrRelationshipNamedType(relationshipModel);
+
+          function normalize(value) {
+            function handleRef(ref) {
+              if (typeof ref !== 'object' || ref === null || !!ref.type && !hasTypeAttribute) {
+                return ref;
+              } // Replace the object with a reference id.
+
+
+              let refId = ref[primaryKey];
+              (references[referencesName] = references[referencesName] || []).push(ref);
+              return refId;
+            }
+
+            if ((0, _utils.isNone)(value)) {
+              return value;
+            }
+
+            switch (relationship.kind) {
+              case 'hasMany':
+                // The reference is a collection of references. We need to iterate over each entry
+                // in the references and flatten it accordingly.
+                if ((0, _utils.isNone)(value[relationshipKey])) {
+                  return value;
+                }
+
+                value[relationshipKey] = value[relationshipKey].map(handleRef);
+                break;
+
+              case 'belongsTo':
+                if ((0, _utils.isNone)(value[relationshipKey])) {
+                  return value;
+                }
+
+                value[relationshipKey] = handleRef(value[relationshipKey]);
+                break;
+            }
+
+            return value;
+          }
+
+          if (Array.isArray(values)) {
+            // Iterate over each value in the payload and process this relationship.
+            payload[key] = values.map(normalize);
+          } else {
+            payload[key] = normalize(values);
+          }
+        });
+      }); // Include the references in the payload.
+
+      if (Object.keys(references).length === 0) {
+        return Object.assign({}, payload, references);
+      }
+
+      return Object.assign({}, payload, references, this._normalizePayload(store, references));
+    }
+
+  });
+  /**
+   * Check if the model class as the type attribute.
+   *
+   * Credit for this code below goes to the @ember-data. It is part or their private methods.
+   *
+   * @param modelClass
+   * @returns {*}
+   */
+
+
+  _exports.default = _default;
+
+  function modelHasAttributeOrRelationshipNamedType(modelClass) {
+    return (0, _object.get)(modelClass, 'attributes').has('type') || (0, _object.get)(modelClass, 'relationshipsByName').has('type');
+  }
+});
+;define("ember-blueprint-data/models/resource-stat", ["exports", "@ember-data/model", "ember-data-model-fragments"], function (_exports, _model, _emberDataModelFragments) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _dec, _dec2, _dec3, _class, _descriptor, _descriptor2, _descriptor3;
+
+  function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+  function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+  let ResourceStatFragment = (_dec = (0, _model.attr)('date'), _dec2 = (0, _model.attr)('date'), _dec3 = (0, _model.attr)('date'), (_class = class ResourceStatFragment extends _emberDataModelFragments.default.Fragment {
+    constructor() {
+      super(...arguments);
+
+      _initializerDefineProperty(this, "createdAt", _descriptor, this);
+
+      _initializerDefineProperty(this, "updatedAt", _descriptor2, this);
+
+      _initializerDefineProperty(this, "deletedAt", _descriptor3, this);
+    }
+
+    get isUpdated() {
+      return !!this.updatedAt;
+    }
+
+    get isDeleted() {
+      return !!this.deletedAt;
+    } /// Get the date the document was last modified. This can either be the update
+    /// date or the create date.
+
+
+    get lastModified() {
+      return this.updatedAt || this.createdAt;
+    }
+
+  }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "createdAt", [_dec], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  }), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "updatedAt", [_dec2], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  }), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "deletedAt", [_dec3], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  })), _class));
+  _exports.default = ResourceStatFragment;
+});
+;define("ember-blueprint-data/resource-stat", ["exports", "@ember/object", "@ember/object/computed"], function (_exports, _object, _computed) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _default = _object.default.extend({
+    createdAt: null,
+    updatedAt: null,
+    deletedAt: null,
+    isUpdated: (0, _computed.bool)('updatedAt'),
+    isDeleted: (0, _computed.bool)('deletedAt')
+  });
+
+  _exports.default = _default;
+});
+;define("ember-blueprint-data/resource", ["exports", "@ember-data/model", "ember-data-model-fragments/attributes", "@ember/utils"], function (_exports, _model, _attributes, _utils) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _dec, _class, _descriptor;
+
+  function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+  function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+  /**
+   * @class ResourceModel
+   *
+   * The base class for all blueprint resource models. The resource model gives
+   * clients access to the resource stats.
+   */
+  let ResourceModel = (_dec = (0, _attributes.fragment)('resource-stat', {
+    serialize: false
+  }), (_class = class ResourceModel extends _model.default {
+    constructor() {
+      super(...arguments);
+
+      _initializerDefineProperty(this, "_stat", _descriptor, this);
+    }
+
+    /// Get the stats for the resource.
+    get stat() {
+      return this._stat;
+    }
+    /**
+     * Test if the resource has stats.
+     */
+
+
+    get hasStat() {
+      return (0, _utils.isPresent)(this._stat);
+    }
+
+  }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "_stat", [_dec], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  })), _class));
+  _exports.default = ResourceModel;
+});
+;define("ember-blueprint-data/serialize-and-push", ["exports"], function (_exports) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = serializeAndPush;
+
+  function serializeAndPush() {
+    let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return function (response) {
+      const {
+        model: modelName = this.constructor.modelName,
+        requestType = 'findRecord'
+      } = options;
+      const serializer = this.store.serializerFor(modelName);
+      const modelClass = this.store.modelFor(modelName) || this.constructor;
+      let normalized = serializer.normalizeResponse(this.store, modelClass, response, null, requestType);
+      return this.store.push(normalized);
+    };
+  }
+});
+;define("ember-blueprint-data/serializers/application", ["exports", "@ember-data/serializer/rest", "ember-blueprint-data/mixins/serializers/mongodb", "@ember/string"], function (_exports, _rest, _mongodb, _string) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _default = _rest.default.extend(_mongodb.default, {
+    payloadKeyFromModelName(modelName) {
+      return (0, _string.dasherize)(modelName);
+    }
+
+  });
+
+  _exports.default = _default;
+});
+;define("ember-blueprint-data/serializers/resource-stat", ["exports", "ember-blueprint-data/serializers/application"], function (_exports, _application) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  class ResourceStatSerializer extends _application.default {}
+
+  _exports.default = ResourceStatSerializer;
+});
 ;define("ember-cached-decorator-polyfill/index", ["exports", "@glimmer/tracking/primitives/cache", "@ember/debug"], function (_exports, _cache, _debug) {
   "use strict";
 
@@ -99948,6 +100773,2416 @@ require('@ember/-internals/bootstrap')
   const shaRegExp = /[a-z\d]{8}$/; // Match 8 lowercase letters and digits, at the end of the string only (to avoid matching with version extended part)
 
   _exports.shaRegExp = shaRegExp;
+});
+;define("ember-copy/copy", ["exports", "@ember/debug", "@ember/object", "ember-copy/copyable"], function (_exports, _debug, _object, _copyable) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = copy;
+
+  function _copy(obj, deep, seen, copies) {
+    // primitive data types are immutable, just return them.
+    if (typeof obj !== 'object' || obj === null) {
+      return obj;
+    }
+
+    let ret, loc; // avoid cyclical loops
+
+    if (deep && (loc = seen.indexOf(obj)) >= 0) {
+      return copies[loc];
+    }
+
+    if (deep) {
+      seen.push(obj);
+    } // IMPORTANT: this specific test will detect a native array only. Any other
+    // object will need to implement Copyable.
+
+
+    if (Array.isArray(obj)) {
+      ret = obj.slice();
+
+      if (deep) {
+        copies.push(ret);
+        loc = ret.length;
+
+        while (--loc >= 0) {
+          ret[loc] = _copy(ret[loc], deep, seen, copies);
+        }
+      }
+    } else if (_copyable.default.detect(obj)) {
+      ret = obj.copy(deep, seen, copies);
+
+      if (deep) {
+        copies.push(ret);
+      }
+    } else if (obj instanceof Date) {
+      ret = new Date(obj.getTime());
+
+      if (deep) {
+        copies.push(ret);
+      }
+    } else {
+      (true && !(!(obj instanceof _object.default) || _copyable.default.detect(obj)) && (0, _debug.assert)('Cannot clone an EmberObject that does not implement Copyable', !(obj instanceof _object.default) || _copyable.default.detect(obj)));
+      ret = {};
+
+      if (deep) {
+        copies.push(ret);
+      }
+
+      let key;
+
+      for (key in obj) {
+        // support Null prototype
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) {
+          continue;
+        } // Prevents browsers that don't respect non-enumerability from
+        // copying internal Ember properties
+
+
+        if (key.substring(0, 2) === '__') {
+          continue;
+        }
+
+        ret[key] = deep ? _copy(obj[key], deep, seen, copies) : obj[key];
+      }
+    }
+
+    return ret;
+  }
+  /**
+    Creates a shallow copy of the passed object. A deep copy of the object is
+    returned if the optional `deep` argument is `true`.
+  
+    If the passed object implements the `Copyable` interface, then this
+    function will delegate to the object's `copy()` method and return the
+    result. See `Copyable` for further details.
+  
+    For primitive values (which are immutable in JavaScript), the passed object
+    is simply returned.
+  
+    @function copy
+    @param {Object} obj The object to clone
+    @param {Boolean} [deep=false] If true, a deep copy of the object is made.
+    @return {Object} The copied object
+  */
+
+
+  function copy(obj, deep) {
+    // fast paths
+    if ('object' !== typeof obj || obj === null) {
+      return obj; // can't copy primitives
+    }
+
+    if (!Array.isArray(obj) && _copyable.default.detect(obj)) {
+      return obj.copy(deep);
+    }
+
+    return _copy(obj, deep, deep ? [] : null, deep ? [] : null);
+  }
+});
+;define("ember-copy/copyable", ["exports", "@ember/object/mixin"], function (_exports, _mixin) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  /**
+    Implements some standard methods for copying an object. Add this mixin to
+    any object you create that can create a copy of itself. This mixin is
+    added automatically to the built-in array.
+  
+    You should generally implement the `copy()` method to return a copy of the
+    receiver.
+  
+    @class Copyable
+  */
+  // eslint-disable-next-line ember/no-new-mixins
+  var _default = _mixin.default.create({
+    /**
+      __Required.__ You must implement this method to apply this mixin.
+       Override to return a copy of the receiver. Default implementation raises
+      an exception.
+       @method copy
+      @param {Boolean} deep if `true`, a deep copy of the object should be made
+      @return {Object} copy of receiver
+    */
+    copy: null
+  });
+
+  _exports.default = _default;
+});
+;define("ember-copy/index", ["exports", "ember-copy/copy", "ember-copy/copyable"], function (_exports, _copy, _copyable) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "Copyable", {
+    enumerable: true,
+    get: function () {
+      return _copyable.default;
+    }
+  });
+  Object.defineProperty(_exports, "copy", {
+    enumerable: true,
+    get: function () {
+      return _copy.default;
+    }
+  });
+});
+;define("ember-data-model-fragments/array/fragment", ["exports", "@ember/debug", "@ember/utils", "@ember/object", "ember-data-model-fragments/array/stateful", "ember-data-model-fragments/fragment", "ember-data-model-fragments/util/instance-of-type"], function (_exports, _debug, _utils, _object, _stateful, _fragment, _instanceOfType) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  /**
+    @module ember-data-model-fragments
+  */
+  // Normalizes an array of object literals or fragments into fragment instances,
+  // reusing fragments from a source content array when possible
+  function normalizeFragmentArray(array, content, objs, canonical) {
+    let record = (0, _object.get)(array, 'owner');
+    let store = (0, _object.get)(record, 'store');
+    let declaredModelName = (0, _object.get)(array, 'type');
+    let options = (0, _object.get)(array, 'options');
+    let key = (0, _object.get)(array, 'name');
+    let fragment;
+    return objs.map((data, index) => {
+      let type = (0, _object.get)(array, 'type');
+      (true && !((0, _utils.typeOf)(data) === 'object' || (0, _instanceOfType.default)(store.modelFor(type), data)) && (0, _debug.assert)(`You can only add '${type}' fragments or object literals to this property`, (0, _utils.typeOf)(data) === 'object' || (0, _instanceOfType.default)(store.modelFor(type), data)));
+
+      if ((0, _fragment.isFragment)(data)) {
+        fragment = data;
+
+        let owner = (0, _fragment.internalModelFor)(fragment)._recordData.getOwner();
+
+        (true && !(!owner || owner === record) && (0, _debug.assert)('Fragments can only belong to one owner, try copying instead', !owner || owner === record));
+
+        if (!owner) {
+          (0, _fragment.setFragmentOwner)(fragment, record, key);
+        }
+      } else {
+        fragment = content[index];
+
+        if (fragment) {
+          // The data could come from a property update, which should leave the
+          // fragment in a dirty state, or an adapter operation which should leave
+          // it in a clean state
+          if (canonical) {
+            (0, _fragment.setFragmentData)(fragment, data);
+          } else {
+            (0, _object.setProperties)(fragment, data);
+          }
+        } else {
+          fragment = (0, _fragment.createFragment)(store, declaredModelName, record, key, options, data);
+        }
+      }
+
+      return fragment;
+    });
+  }
+  /**
+    A state-aware array of fragments that is tied to an attribute of a `DS.Model`
+    instance. `FragmentArray` instances should not be created directly, instead
+    use `MF.fragmentArray` or `MF.array`.
+  
+    @class FragmentArray
+    @namespace MF
+    @extends StatefulArray
+  */
+
+
+  const FragmentArray = _stateful.default.extend({
+    /**
+      The type of fragments the array contains
+       @property type
+      @private
+      @type {String}
+    */
+    type: null,
+    options: null,
+
+    /**
+      @method _normalizeData
+      @private
+      @param {Object} data
+    */
+    _normalizeData(data) {
+      let content = this.content;
+      return normalizeFragmentArray(this, content, data, true);
+    },
+
+    /**
+      @method _createSnapshot
+      @private
+    */
+    _createSnapshot() {
+      // Snapshot each fragment
+      return this.map(fragment => {
+        return fragment._createSnapshot();
+      });
+    },
+
+    /**
+      @method _flushChangedAttributes
+    */
+    _flushChangedAttributes() {
+      this.map(fragment => {
+        fragment._flushChangedAttributes();
+      });
+    },
+
+    /**
+      @method _didCommit
+      @private
+    */
+    _didCommit(data) {
+      this._super(...arguments); // Notify all records of commit; if the adapter update did not contain new
+      // data, just notify each fragment so it can transition to a clean state
+
+
+      this.forEach((fragment, index) => {
+        fragment._didCommit(data && data[index]);
+      });
+    },
+
+    /**
+      @method _adapterDidError
+      @private
+    */
+    _adapterDidError(error) {
+      this._super(...arguments); // Notify all records of the error; if the adapter update did not contain new
+      // data, just notify each fragment so it can transition to a clean state
+
+
+      this.forEach(fragment => {
+        fragment._adapterDidError(error);
+      });
+    },
+
+    /**
+      If this property is `true`, either the contents of the array do not match
+      its original state, or one or more of the fragments in the array are dirty.
+       Example
+       ```javascript
+      array.toArray(); // [ <Fragment:1>, <Fragment:2> ]
+      array.get('hasDirtyAttributes'); // false
+      array.get('firstObject').set('prop', 'newValue');
+      array.get('hasDirtyAttributes'); // true
+      ```
+       @property hasDirtyAttributes
+      @type {Boolean}
+      @readOnly
+    */
+    hasDirtyAttributes: (0, _object.computed)('@each.hasDirtyAttributes', '_originalState', function () {
+      return this._super(...arguments) || this.isAny('hasDirtyAttributes');
+    }),
+
+    /**
+      This method reverts local changes of the array's contents to its original
+      state, and calls `rollbackAttributes` on each fragment.
+       Example
+       ```javascript
+      array.get('firstObject').get('hasDirtyAttributes'); // true
+      array.get('hasDirtyAttributes'); // true
+      array.rollbackAttributes();
+      array.get('firstObject').get('hasDirtyAttributes'); // false
+      array.get('hasDirtyAttributes'); // false
+      ```
+       @method rollbackAttributes
+    */
+    rollbackAttributes() {
+      this._super(...arguments);
+
+      this.invoke('rollbackAttributes');
+    },
+
+    /**
+      Serializing a fragment array returns a new array containing the results of
+      calling `serialize` on each fragment in the array.
+       @method serialize
+      @return {Array}
+    */
+    serialize() {
+      return this.invoke('serialize');
+    },
+
+    /**
+      Used to normalize data since all array manipulation methods use this method.
+       @method replaceContent
+      @private
+    */
+    replaceContent(index, amount, objs) {
+      let content = this.content;
+      let replacedContent = content.slice(index, index + amount);
+      let fragments = normalizeFragmentArray(this, replacedContent, objs);
+      return content.replace(index, amount, fragments);
+    },
+
+    /**
+      Adds an existing fragment to the end of the fragment array. Alias for
+      `addObject`.
+       @method addFragment
+      @param {MF.Fragment} fragment
+      @return {MF.Fragment} the newly added fragment
+    */
+    addFragment(fragment) {
+      return this.addObject(fragment);
+    },
+
+    /**
+      Removes the given fragment from the array. Alias for `removeObject`.
+       @method removeFragment
+      @param {MF.Fragment} fragment
+      @return {MF.Fragment} the removed fragment
+    */
+    removeFragment(fragment) {
+      return this.removeObject(fragment);
+    },
+
+    /**
+      Creates a new fragment of the fragment array's type and adds it to the end
+      of the fragment array
+       @method createFragment
+      @param {MF.Fragment} fragment
+      @return {MF.Fragment} the newly added fragment
+      */
+    createFragment(props) {
+      let record = this.owner;
+      let store = (0, _object.get)(record, 'store');
+      let type = this.type;
+      let fragment = store.createFragment(type, props);
+      return this.pushObject(fragment);
+    },
+
+    willDestroy() {
+      this._super(...arguments); // destroy the current state
+
+
+      this.forEach(fragment => {
+        fragment.destroy();
+      }); // destroy the original state
+
+      this._originalState.forEach(fragment => {
+        fragment.destroy();
+      });
+    }
+
+  });
+
+  var _default = FragmentArray;
+  _exports.default = _default;
+});
+;define("ember-data-model-fragments/array/stateful", ["exports", "@ember/utils", "@ember/array/proxy", "@ember/array", "ember-copy", "@ember/object", "ember-data-model-fragments/states"], function (_exports, _utils, _proxy, _array, _emberCopy, _object, _states) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  /**
+    @module ember-data-model-fragments
+  */
+
+  /**
+    A state-aware array that is tied to an attribute of a `DS.Model` instance.
+  
+    @class StatefulArray
+    @namespace MF
+    @extends Ember.ArrayProxy
+  */
+  const StatefulArray = _proxy.default.extend(_emberCopy.Copyable, {
+    /**
+      A reference to the array's owner record.
+       @property owner
+      @type {DS.Model}
+    */
+    owner: null,
+
+    /**
+      The array's property name on the owner record.
+       @property name
+      @private
+      @type {String}
+    */
+    name: null,
+
+    init() {
+      this._super(...arguments);
+
+      this._pendingData = undefined;
+      (0, _object.set)(this, '_originalState', []);
+    },
+
+    content: (0, _object.computed)(function () {
+      return (0, _array.A)();
+    }),
+
+    /**
+      Copies the array by calling copy on each of its members.
+       @method copy
+      @return {array} a new array
+    */
+    copy() {
+      return this.map(_emberCopy.copy);
+    },
+
+    /**
+      @method setupData
+      @private
+      @param {Object} data
+    */
+    setupData(data) {
+      // Since replacing the contents of the array can trigger changes to fragment
+      // array properties, this method can get invoked recursively with the same
+      // data, so short circuit here once it's been setup the first time
+      if (this._pendingData === data) {
+        return;
+      }
+
+      this._pendingData = data;
+
+      let processedData = this._normalizeData((0, _array.makeArray)(data));
+
+      let content = (0, _object.get)(this, 'content'); // This data is canonical, so create rollback point
+
+      (0, _object.set)(this, '_originalState', processedData); // Completely replace the contents with the new data
+
+      content.replace(0, (0, _object.get)(content, 'length'), processedData);
+      this._pendingData = undefined;
+    },
+
+    /**
+      @method _normalizeData
+      @private
+      @param {Object} data
+    */
+    _normalizeData(data) {
+      return data;
+    },
+
+    /**
+      @method _createSnapshot
+      @private
+    */
+    _createSnapshot() {
+      // Since elements are not models, a snapshot is simply a mapping of raw values
+      return this.toArray();
+    },
+
+    /**
+      @method _flushChangedAttributes
+    */
+    _flushChangedAttributes() {},
+
+    /**
+      @method _didCommit
+      @private
+    */
+    _didCommit(data) {
+      if (data) {
+        this.setupData(data);
+      } else {
+        // Fragment array has been persisted; use the current state as the original state
+        (0, _object.set)(this, '_originalState', this.toArray());
+      }
+    },
+
+    _adapterDidError() {// No-Op
+    },
+
+    /**
+      If this property is `true` the contents of the array do not match its
+      original state. The array has local changes that have not yet been saved by
+      the adapter. This includes additions, removals, and reordering of elements.
+       Example
+       ```javascript
+      array.toArray(); // [ 'Tom', 'Yehuda' ]
+      array.get('isDirty'); // false
+      array.popObject(); // 'Yehuda'
+      array.get('isDirty'); // true
+      ```
+       @property hasDirtyAttributes
+      @type {Boolean}
+      @readOnly
+    */
+    hasDirtyAttributes: (0, _object.computed)('[]', '_originalState', function () {
+      return (0, _utils.compare)(this.toArray(), (0, _object.get)(this, '_originalState')) !== 0;
+    }),
+
+    /**
+      This method reverts local changes of the array's contents to its original
+      state.
+       Example
+       ```javascript
+      array.toArray(); // [ 'Tom', 'Yehuda' ]
+      array.popObject(); // 'Yehuda'
+      array.toArray(); // [ 'Tom' ]
+      array.rollbackAttributes();
+      array.toArray(); // [ 'Tom', 'Yehuda' ]
+      ```
+       @method rollbackAttributes
+    */
+    rollbackAttributes() {
+      this.setObjects((0, _object.get)(this, '_originalState'));
+    },
+
+    /**
+      Method alias for `toArray`.
+       @method serialize
+      @return {Array}
+    */
+    serialize() {
+      return this.toArray();
+    },
+
+    arrayContentDidChange() {
+      this._super(...arguments);
+
+      let record = (0, _object.get)(this, 'owner');
+      let key = (0, _object.get)(this, 'name'); // Abort if fragment is still initializing
+
+      if (record._internalModel._recordData.isStateInitializing()) {
+        return;
+      } // Any change to the size of the fragment array means a potential state change
+
+
+      if ((0, _object.get)(this, 'hasDirtyAttributes')) {
+        (0, _states.fragmentDidDirty)(record, key, this);
+      } else {
+        (0, _states.fragmentDidReset)(record, key);
+      }
+    },
+
+    toStringExtension() {
+      let ownerId = (0, _object.get)(this, 'owner.id');
+      return `owner(${ownerId})`;
+    }
+
+  });
+
+  var _default = StatefulArray;
+  _exports.default = _default;
+});
+;define("ember-data-model-fragments/attributes", ["exports", "@ember/debug", "@ember/object", "ember-data-model-fragments/fragment"], function (_exports, _debug, _object, _fragment) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.array = array;
+  _exports.fragment = fragment;
+  _exports.fragmentArray = fragmentArray;
+  _exports.fragmentOwner = fragmentOwner;
+
+  /**
+    @module ember-data-model-fragments
+  */
+  // Create a unique type string for the combination of fragment property type,
+  // transform type (or fragment model), and polymorphic type key
+  function metaTypeFor(name, type, options) {
+    let metaType = `-mf-${name}`;
+
+    if (type) {
+      metaType += `$${type}`;
+    }
+
+    if (options && options.polymorphic) {
+      let typeKey = options.typeKey || 'type';
+      typeKey = typeof typeKey === 'function' ? '__dynamic__' : typeKey;
+      metaType += `$${typeKey}`;
+    }
+
+    return metaType;
+  }
+  /**
+    `MF.fragment` defines an attribute on a `DS.Model` or `MF.Fragment`. Much
+    like `DS.belongsTo`, it creates a property that returns a single fragment of
+    the given type.
+  
+    It takes an optional hash as a second parameter, currently supported options
+    are:
+  
+    - `defaultValue`: An object literal or a function to be called to set the
+      attribute to a default value if none is supplied. Values are deep copied
+      before being used. Note that default values will be passed through the
+      fragment's serializer when creating the fragment. Defaults to `null`.
+    - `polymorphic`: Whether or not the fragments in the array can be child
+      classes of the given type.
+    - `typeKey`: If `polymorphic` is true, the property to use as the fragment
+      type in the normalized data. Defaults to `type`.
+  
+    Example
+  
+    ```javascript
+    App.Person = DS.Model.extend({
+      name: MF.fragment('name', { defaultValue: {} })
+    });
+  
+    App.Name = MF.Fragment.extend({
+      first: DS.attr('string'),
+      last: DS.attr('string')
+    });
+    ```
+  
+    @namespace MF
+    @method fragment
+    @param {String} type the fragment type
+    @param {Object} options a hash of options
+    @return {Attribute}
+  */
+
+
+  function fragment(declaredModelName, options) {
+    options = options || {};
+    let metaType = metaTypeFor('fragment', declaredModelName, options);
+    return fragmentProperty(metaType, options, declaredModelName);
+  }
+  /**
+    `MF.fragmentArray` defines an attribute on a `DS.Model` or `MF.Fragment`.
+    Much like `DS.hasMany`, it creates a property that returns an array of
+    fragments of the given type. The array is aware of its original state and so
+    has a `hasDirtyAttributes` property and a `rollback` method.
+  
+    It takes an optional hash as a second parameter, currently supported options
+    are:
+  
+    - `defaultValue`: An array literal or a function to be called to set the
+      attribute to a default value if none is supplied. Values are deep copied
+      before being used. Note that default values will be passed through the
+      fragment's serializer when creating the fragment. Defaults to an empty
+      array.
+    - `polymorphic`: Whether or not the fragments in the array can be child
+      classes of the given type.
+    - `typeKey`: If `polymorphic` is true, the property to use as the fragment
+      type in the normalized data. Defaults to `type`.
+  
+    Example
+  
+    ```javascript
+    App.Person = DS.Model.extend({
+      addresses: MF.fragmentArray('address')
+    });
+  
+    App.Address = MF.Fragment.extend({
+      street: DS.attr('string'),
+      city: DS.attr('string'),
+      region: DS.attr('string'),
+      country: DS.attr('string')
+    });
+    ```
+  
+    @namespace MF
+    @method fragmentArray
+    @param {String} type the fragment type (optional)
+    @param {Object} options a hash of options
+    @return {Attribute}
+  */
+
+
+  function fragmentArray(modelName, options) {
+    options || (options = {});
+    let metaType = metaTypeFor('fragment-array', modelName, options); // fragmentArrayProperty takes type, options, modelName, isFragmentArray
+
+    return fragmentArrayProperty(metaType, options, modelName, true);
+  }
+  /**
+    `MF.array` defines an attribute on a `DS.Model` or `MF.Fragment`. It creates a
+    property that returns an array of values of the given primitive type. The
+    array is aware of its original state and so has a `hasDirtyAttributes`
+    property and a `rollback` method.
+  
+    It takes an optional hash as a second parameter, currently supported options
+    are:
+  
+    - `defaultValue`: An array literal or a function to be called to set the
+      attribute to a default value if none is supplied. Values are deep copied
+      before being used. Note that default values will be passed through the
+      fragment's serializer when creating the fragment.
+  
+    Example
+  
+    ```javascript
+    App.Person = DS.Model.extend({
+      aliases: MF.array('string')
+    });
+    ```
+  
+    @namespace MF
+    @method array
+    @param {String} type the type of value contained in the array
+    @param {Object} options a hash of options
+    @return {Attribute}
+  */
+
+
+  function array(type, options) {
+    if (typeof type === 'object') {
+      options = type;
+      type = undefined;
+    } else {
+      options || (options = {});
+    }
+
+    let metaType = metaTypeFor('array', type); // fragmentArrayProperty takes type, options, modelName, isArray, isFragmentArray
+
+    return fragmentArrayProperty(metaType, options, null, false);
+  }
+
+  function fragmentProperty(type, options, declaredModelName) {
+    let isArray = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+    let isFragmentArray = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    options = options || {};
+    let meta = {
+      type: type,
+      isAttribute: true,
+      isFragment: true,
+      options: options
+    };
+    return (0, _object.computed)({
+      get(key) {
+        let fragment;
+        let internalModel = (0, _fragment.internalModelFor)(this);
+
+        if (isArray) {
+          fragment = internalModel._recordData.getFragmentArray(key, options, declaredModelName, this, isFragmentArray);
+        } else {
+          fragment = internalModel._recordData.getFragment(key, options, declaredModelName, this);
+        }
+
+        return fragment;
+      },
+
+      set(key, value) {
+        let fragment;
+        let internalModel = (0, _fragment.internalModelFor)(this);
+
+        if (isArray) {
+          fragment = internalModel._recordData.getFragmentArray(key, options, declaredModelName, this, isFragmentArray);
+          fragment = internalModel._recordData.setFragmentArrayValue(key, fragment, value, this, declaredModelName, options, isFragmentArray);
+        } else {
+          fragment = internalModel._recordData.getFragment(key, options, declaredModelName, this);
+          fragment = internalModel._recordData.setFragmentValue(key, fragment, value, this, declaredModelName, options);
+        }
+
+        return internalModel._recordData.fragments[key] = fragment;
+      }
+
+    }).meta(meta);
+  }
+
+  function fragmentArrayProperty(metaType, options, declaredModelName, isFragmentArray) {
+    return fragmentProperty(metaType, options, declaredModelName, true, isFragmentArray);
+  }
+  /**
+    `MF.fragmentOwner` defines a read-only attribute on a `MF.Fragment`
+    instance. The attribute returns a reference to the fragment's owner
+    record.
+  
+    Example
+  
+    ```javascript
+    App.Person = DS.Model.extend({
+      name: MF.fragment('name')
+    });
+  
+    App.Name = MF.Fragment.extend({
+      first: DS.attr('string'),
+      last: DS.attr('string'),
+      person: MF.fragmentOwner()
+    });
+    ```
+  
+    @namespace MF
+    @method fragmentOwner
+    @return {Attribute}
+  */
+
+
+  function fragmentOwner() {
+    return (0, _object.computed)(function () {
+      (true && !((0, _fragment.isFragment)(this)) && (0, _debug.assert)('Fragment owner properties can only be used on fragments.', (0, _fragment.isFragment)(this)));
+      return (0, _fragment.internalModelFor)(this)._recordData._owner;
+    }).meta({
+      isFragmentOwner: true
+    }).readOnly();
+  }
+});
+;define("ember-data-model-fragments/ext", ["exports", "@ember/debug", "@ember-data/store", "@ember-data/model", "ember-data/-private", "@ember-data/serializer/json", "ember-data-model-fragments/states", "ember-data-model-fragments/record-data", "ember-data-model-fragments/fragment", "@ember/utils", "@ember/object", "@ember/application"], function (_exports, _debug, _store, _model, _private, _json, _states, _recordData, _fragment, _utils, _object, _application) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "JSONSerializer", {
+    enumerable: true,
+    get: function () {
+      return _json.default;
+    }
+  });
+  Object.defineProperty(_exports, "Model", {
+    enumerable: true,
+    get: function () {
+      return _model.default;
+    }
+  });
+  Object.defineProperty(_exports, "Store", {
+    enumerable: true,
+    get: function () {
+      return _store.default;
+    }
+  });
+
+  // eslint-disable-next-line ember/use-ember-data-rfc-395-imports
+  function serializerForFragment(owner, normalizedModelName) {
+    let serializer = owner.lookup(`serializer:${normalizedModelName}`);
+
+    if (serializer !== undefined) {
+      return serializer;
+    } // no serializer found for the specific model, fallback and check for application serializer
+
+
+    serializer = owner.lookup('serializer:-fragment');
+
+    if (serializer !== undefined) {
+      return serializer;
+    } // final fallback, no model specific serializer, no application serializer, no
+    // `serializer` property on store: use json-api serializer
+
+
+    serializer = owner.lookup('serializer:-default');
+    return serializer;
+  }
+  /**
+    @module ember-data-model-fragments
+  */
+
+
+  const InternalModelPrototype = _private.InternalModel.prototype;
+  const RecordDataPrototype = _private.RecordData.prototype;
+  Object.assign(RecordDataPrototype, {
+    eachFragmentKey(fn) {
+      Object.keys(this.fragments).forEach(fn);
+    },
+
+    eachFragmentKeyValue(fn) {
+      this.eachFragmentKey(key => {
+        const value = this.getFragment(key);
+
+        if (value) {
+          fn(key, value);
+        }
+      });
+    },
+
+    getOwner() {
+      return this._owner;
+    },
+
+    setOwner(value) {
+      this._owner = value;
+    },
+
+    setName(value) {
+      this._name = value;
+    },
+
+    getName() {
+      return this._name;
+    },
+
+    getFragment(name) {
+      return this.fragments[name];
+    },
+
+    didCommit(data) {
+      if (this._attributes) {
+        // willCommit was never called
+        if (!this._inFlightAttributes) {
+          this._inFlightAttributes = this._attributes;
+        } else {
+          Object.assign(this._inFlightAttributes, this._attributes);
+        }
+
+        this._attributes = null;
+      }
+
+      this._isNew = false;
+
+      if (data) {
+        if (data.relationships) {
+          this._setupRelationships(data);
+        }
+
+        if (data.id) {
+          // didCommit provided an ID, notify the store of it
+          this.storeWrapper.setRecordId(this.modelName, data.id, this.clientId);
+          this.id = (0, _private.coerceId)(data.id);
+        }
+
+        data = data.attributes; // Notify fragments that the record was committed
+
+        this.eachFragmentKeyValue((key, fragment) => fragment._didCommit(data[key]));
+      } else {
+        this.eachFragmentKeyValue((key, fragment) => fragment._didCommit());
+      }
+
+      const changedKeys = this._changedKeys(data);
+
+      Object.assign(this._data, this._inFlightAttributes, data);
+      this._inFlightAttributes = null;
+
+      this._updateChangedAttributes();
+
+      return changedKeys;
+    }
+
+  });
+  /**
+    @class Store
+    @namespace DS
+  */
+
+  _store.default.reopen({
+    createRecordDataFor(type, id, lid, storeWrapper) {
+      let identifier;
+
+      if (false) {
+        throw new Error('This version of Ember Data Model Fragments is incompatible with Ember Data Versions below 3.13. See matrix at https://github.com/lytics/ember-data-model-fragments#compatibility for details.');
+      }
+
+      if (true) {
+        identifier = this.identifierCache.getOrCreateRecordIdentifier({
+          type,
+          id,
+          lid
+        });
+      } else {
+        identifier = {
+          type,
+          id,
+          clientId: lid
+        };
+      }
+
+      return new _recordData.default(identifier, storeWrapper);
+    },
+
+    /**
+      Create a new fragment that does not yet have an owner record.
+      The properties passed to this method are set on the newly created
+      fragment.
+       To create a new instance of the `name` fragment:
+       ```js
+      store.createFragment('name', {
+        first: 'Alex',
+        last: 'Routé'
+      });
+      ```
+       @method createRecord
+      @param {String} type
+      @param {Object} properties a hash of properties to set on the
+        newly created fragment.
+      @return {MF.Fragment} fragment
+    */
+    createFragment(modelName, props) {
+      (true && !(this.isFragment(modelName)) && (0, _debug.assert)(`The '${modelName}' model must be a subclass of MF.Fragment`, this.isFragment(modelName)));
+      let internalModel;
+
+      if (true) {
+        const identifier = this.identifierCache.createIdentifierForNewRecord({
+          type: modelName
+        });
+        internalModel = this._internalModelForResource(identifier);
+      } else {
+        let identifier = {
+          type: modelName,
+          id: `${Math.random()}`,
+          lid: `${Math.random()}`
+        };
+        internalModel = this._internalModelForResource(identifier);
+      } // Re-wire the internal model to use the fragment state machine
+
+
+      internalModel.currentState = _states.default.empty;
+      internalModel._recordData._name = null;
+      internalModel._recordData._owner = null;
+      internalModel.send('loadedData');
+      let fragment = internalModel.getRecord();
+
+      if (props) {
+        fragment.setProperties(props);
+      } // invoke the ready callback ( to mimic DS.Model behaviour )
+
+
+      fragment.trigger('ready'); // Add brand to reduce usages of `instanceof`
+
+      fragment._isFragment = true;
+      return fragment;
+    },
+
+    /**
+      Returns true if the modelName is a fragment, false if not
+       @method isFragment
+      @private
+      @param {String} the modelName to check if a fragment
+      @return {boolean}
+    */
+    isFragment(modelName) {
+      if (modelName === 'application' || modelName === '-default') {
+        return false;
+      }
+
+      let type = this.modelFor(modelName);
+      return _fragment.default.detect(type);
+    },
+
+    serializerFor(modelName) {
+      // this assertion is cargo-culted from ember-data TODO: update comment
+      (true && !((0, _utils.isPresent)(modelName)) && (0, _debug.assert)('You need to pass a model name to the store\'s serializerFor method', (0, _utils.isPresent)(modelName)));
+      (true && !(typeof modelName === 'string') && (0, _debug.assert)(`Passing classes to store.serializerFor has been removed. Please pass a dasherized string instead of ${modelName}`, typeof modelName === 'string'));
+      let owner = (0, _application.getOwner)(this);
+      let normalizedModelName = (0, _private.normalizeModelName)(modelName);
+
+      if (this.isFragment(normalizedModelName)) {
+        return serializerForFragment(owner, normalizedModelName);
+      } else {
+        return this._super(...arguments);
+      }
+    }
+
+  });
+  /**
+    @class Model
+    @namespace DS
+    */
+
+
+  _model.default.reopen({
+    willDestroy() {
+      this._super(...arguments);
+
+      let internalModel = (0, _fragment.internalModelFor)(this); // destroy the current state
+
+      internalModel._recordData.resetFragments();
+    }
+
+  });
+
+  _model.default.reopenClass({
+    fields: (0, _object.computed)(function () {
+      let map = new Map();
+      this.eachComputedProperty((name, meta) => {
+        if (meta.isFragment) {
+          map.set(name, 'fragment');
+        } else if (meta.isRelationship) {
+          map.set(name, meta.kind);
+        } else if (meta.isAttribute) {
+          map.set(name, 'attribute');
+        }
+      });
+      return map;
+    }).readOnly()
+  }); // Replace a method on an object with a new one that calls the original and then
+  // invokes a function with the result
+
+
+  function decorateMethod(obj, name, fn) {
+    let originalFn = obj[name];
+
+    obj[name] = function () {
+      let value = originalFn.apply(this, arguments);
+      return fn.call(this, value, arguments);
+    };
+  }
+  /**
+    Override parent method to snapshot fragment attributes before they are
+    passed to the `DS.Model#serialize`.
+  
+    @method _createSnapshot
+    @private
+  */
+
+
+  decorateMethod(InternalModelPrototype, 'createSnapshot', function createFragmentSnapshot(snapshot) {
+    let attrs = snapshot._attributes;
+    Object.keys(attrs).forEach(key => {
+      let attr = attrs[key]; // If the attribute has a `_createSnapshot` method, invoke it before the
+      // snapshot gets passed to the serializer
+
+      if (attr && typeof attr._createSnapshot === 'function') {
+        attrs[key] = attr._createSnapshot();
+      }
+    });
+    return snapshot;
+  });
+  /**
+    @class JSONSerializer
+    @namespace DS
+  */
+
+  _json.default.reopen({
+    /**
+      Enables fragment properties to have custom transforms based on the fragment
+      type, so that deserialization does not have to happen on the fly
+       @method transformFor
+      @private
+    */
+    transformFor(attributeType) {
+      if (attributeType.indexOf('-mf-') !== 0) {
+        return this._super(...arguments);
+      }
+
+      const owner = (0, _application.getOwner)(this);
+      const containerKey = `transform:${attributeType}`;
+
+      if (!owner.hasRegistration(containerKey)) {
+        const match = attributeType.match(/^-mf-(fragment|fragment-array|array)(?:\$([^$]+))?(?:\$(.+))?$/);
+        const transformName = match[1];
+        const type = match[2];
+        const polymorphicTypeProp = match[3];
+        let transformClass = owner.factoryFor(`transform:${transformName}`);
+        transformClass = transformClass && transformClass.class;
+        transformClass = transformClass.extend({
+          type,
+          polymorphicTypeProp,
+          store: this.store
+        });
+        owner.register(containerKey, transformClass);
+      }
+
+      return owner.lookup(containerKey);
+    },
+
+    // We need to override this to handle polymorphic with a typeKey function
+    applyTransforms(typeClass, data) {
+      let attributes = (0, _object.get)(typeClass, 'attributes');
+      typeClass.eachTransformedAttribute((key, typeClass) => {
+        if (data[key] === undefined) {
+          return;
+        }
+
+        let transform = this.transformFor(typeClass);
+        let transformMeta = attributes.get(key);
+        data[key] = transform.deserialize(data[key], transformMeta.options, data);
+      });
+      return data;
+    }
+
+  });
+});
+;define("ember-data-model-fragments/fragment", ["exports", "@ember/debug", "ember-copy", "@ember/object", "ember", "ember-data-model-fragments/ext"], function (_exports, _debug, _emberCopy, _object, _ember, _ext) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.createFragment = createFragment;
+  _exports.default = void 0;
+  _exports.getActualFragmentType = getActualFragmentType;
+  _exports.internalModelFor = internalModelFor;
+  _exports.isFragment = isFragment;
+  _exports.setFragmentData = setFragmentData;
+  _exports.setFragmentOwner = setFragmentOwner;
+
+  // DS.Model gets munged to add fragment support, which must be included first
+
+  /**
+    @module ember-data-model-fragments
+  */
+
+  /**
+    The class that all nested object structures, or 'fragments', descend from.
+    Fragments are bound to a single 'owner' record (an instance of `DS.Model`)
+    and cannot change owners once set. They behave like models, but they have
+    no `save` method since their persistence is managed entirely through their
+    owner. Because of this, a fragment's state directly influences its owner's
+    state, e.g. when a record's fragment `hasDirtyAttributes`, its owner
+    `hasDirtyAttributes`.
+  
+    Example:
+  
+    ```javascript
+    App.Person = DS.Model.extend({
+      name: MF.fragment('name')
+    });
+  
+    App.Name = MF.Fragment.extend({
+      first  : DS.attr('string'),
+      last   : DS.attr('string')
+    });
+    ```
+  
+    With JSON response:
+  
+    ```json
+    {
+      'id': '1',
+      'name': {
+        'first': 'Robert',
+        'last': 'Jackson'
+      }
+    }
+    ```
+  
+    ```javascript
+    let person = store.getbyid('person', '1');
+    let name = person.get('name');
+  
+    person.get('hasDirtyAttributes'); // false
+    name.get('hasDirtyAttributes'); // false
+    name.get('first'); // 'Robert'
+  
+    name.set('first', 'The Animal');
+    name.get('hasDirtyAttributes'); // true
+    person.get('hasDirtyAttributes'); // true
+  
+    person.rollbackAttributes();
+    name.get('first'); // 'Robert'
+    person.get('hasDirtyAttributes'); // false
+    person.get('hasDirtyAttributes'); // false
+    ```
+  
+    @class Fragment
+    @namespace MF
+    @extends CoreModel
+    @uses Ember.Comparable
+    @uses Copyable
+  */
+  const Fragment = _ext.Model.extend(_ember.default.Comparable, _emberCopy.Copyable, {
+    /**
+      Compare two fragments by identity to allow `FragmentArray` to diff arrays.
+       @method compare
+      @param a {MF.Fragment} the first fragment to compare
+      @param b {MF.Fragment} the second fragment to compare
+      @return {Integer} the result of the comparison
+    */
+    compare(f1, f2) {
+      return f1 === f2 ? 0 : 1;
+    },
+
+    /**
+      Create a new fragment that is a copy of the current fragment. Copied
+      fragments do not have the same owner record set, so they may be added
+      to other records safely.
+       @method copy
+      @return {MF.Fragment} the newly created fragment
+    */
+    copy() {
+      let type = this.constructor;
+      let props = Object.create(null); // Loop over each attribute and copy individually to ensure nested fragments
+      // are also copied
+
+      type.eachAttribute(name => {
+        props[name] = (0, _emberCopy.copy)((0, _object.get)(this, name));
+      });
+      let modelName = type.modelName || this._internalModel.modelName;
+      return this.store.createFragment(modelName, props);
+    },
+
+    /**
+      @method _flushChangedAttributes
+    */
+    _flushChangedAttributes() {
+      internalModelFor(this)._recordData.willCommit();
+    },
+
+    /**
+      @method _didCommit
+    */
+    _didCommit(data) {
+      internalModelFor(this).adapterDidCommit({
+        attributes: data || Object.create(null)
+      });
+    },
+
+    /**
+      @method _didCommit
+    */
+    _adapterDidError() {
+      internalModelFor(this)._recordData.commitWasRejected();
+    },
+
+    toStringExtension() {
+      let internalModel = internalModelFor(this);
+      let owner = internalModel && internalModel._recordData._owner;
+
+      if (owner) {
+        let ownerId = (0, _object.get)(owner, 'id');
+        return `owner(${ownerId})`;
+      } else {
+        return '';
+      }
+    }
+
+  }).reopenClass({
+    fragmentOwnerProperties: (0, _object.computed)(function () {
+      let props = [];
+      this.eachComputedProperty((name, meta) => {
+        if (meta.isFragmentOwner) {
+          props.push(name);
+        }
+      });
+      return props;
+    }).readOnly()
+  });
+  /**
+   * `getActualFragmentType` returns the actual type of a fragment based on its declared type
+   * and whether it is configured to be polymorphic.
+   *
+   * @private
+   * @param {String} declaredType the type as declared by `MF.fragment` or `MF.fragmentArray`
+   * @param {Object} options the fragment options
+   * @param {Object} data the fragment data
+   * @return {String} the actual fragment type
+   */
+
+
+  function getActualFragmentType(declaredType, options, data, owner) {
+    if (!options.polymorphic || !data) {
+      return declaredType;
+    }
+
+    let typeKey = options.typeKey || 'type';
+    let actualType = typeof typeKey === 'function' ? typeKey(data, owner) : data[typeKey];
+    return actualType || declaredType;
+  } // Returns the internal model for the given record/fragment
+
+
+  function internalModelFor(record) {
+    return record._internalModel;
+  } // Sets the owner/key values on a fragment
+
+
+  function setFragmentOwner(fragment, record, key) {
+    let internalModel = internalModelFor(fragment);
+    (true && !(!internalModel._recordData._owner || internalModel._recordData._owner === record) && (0, _debug.assert)('To preserve rollback semantics, fragments can only belong to one owner. Try copying instead', !internalModel._recordData._owner || internalModel._recordData._owner === record));
+    internalModel._recordData._owner = record;
+    internalModel._recordData._name = key; // Notify any observers of `fragmentOwner` properties
+
+    (0, _object.get)(fragment.constructor, 'fragmentOwnerProperties').forEach(name => {
+      fragment.notifyPropertyChange(name);
+    });
+    return fragment;
+  } // Sets the data of a fragment and leaves the fragment in a clean state
+
+
+  function setFragmentData(fragment, data) {
+    internalModelFor(fragment).setupData({
+      attributes: data
+    });
+  } // Creates a fragment and sets its owner to the given record
+
+
+  function createFragment(store, declaredModelName, record, key, options, data) {
+    let actualModelName = getActualFragmentType(declaredModelName, options, data, record);
+    let fragment = store.createFragment(actualModelName);
+    setFragmentOwner(fragment, record, key);
+    setFragmentData(fragment, data);
+    return fragment;
+  } // Determine whether an object is a fragment instance using a stamp to reduce
+  // the number of instanceof checks
+
+
+  function isFragment(obj) {
+    return obj && obj._isFragment;
+  }
+
+  var _default = Fragment;
+  _exports.default = _default;
+});
+;define("ember-data-model-fragments/index", ["exports", "ember", "ember-data-model-fragments/version", "ember-data-model-fragments/fragment", "ember-data-model-fragments/array/fragment", "ember-data-model-fragments/transforms/fragment", "ember-data-model-fragments/transforms/fragment-array", "ember-data-model-fragments/transforms/array", "ember-data-model-fragments/attributes"], function (_exports, _ember, _version, _fragment, _fragment2, _fragment3, _fragmentArray, _array, _attributes) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  /**
+    Ember Data Model Fragments
+  
+    @module ember-data-model-fragments
+    @main ember-data-model-fragments
+  */
+  const MF = _ember.default.Namespace.create({
+    // eslint-disable-line ember/new-module-imports
+    VERSION: _version.default,
+    Fragment: _fragment.default,
+    FragmentArray: _fragment2.default,
+    FragmentTransform: _fragment3.default,
+    FragmentArrayTransform: _fragmentArray.default,
+    ArrayTransform: _array.default,
+    fragment: _attributes.fragment,
+    fragmentArray: _attributes.fragmentArray,
+    array: _attributes.array,
+    fragmentOwner: _attributes.fragmentOwner
+  });
+
+  if (_ember.default.libraries) {
+    _ember.default.libraries.register('Model Fragments', MF.VERSION);
+  }
+
+  var _default = MF;
+  _exports.default = _default;
+});
+;define("ember-data-model-fragments/record-data", ["exports", "ember-data/-private", "@ember/debug", "@ember/utils", "@ember/object", "ember-copy", "ember-data-model-fragments/util/instance-of-type", "@ember/array", "ember-data-model-fragments/states", "ember-data-model-fragments/array/stateful", "ember-data-model-fragments/array/fragment", "ember-data-model-fragments/fragment"], function (_exports, _private, _debug, _utils, _object, _emberCopy, _instanceOfType, _array, _states, _stateful, _fragment, _fragment2) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.fragmentRecordDatas = _exports.default = void 0;
+  // eslint-disable-next-line ember/use-ember-data-rfc-395-imports
+  let fragmentRecordDatas = new WeakMap();
+  _exports.fragmentRecordDatas = fragmentRecordDatas;
+
+  class FragmentRecordData extends _private.RecordData {
+    constructor(identifier, store) {
+      if (true) {
+        super(identifier, store);
+      } else {
+        super(identifier.type, identifier.id, identifier.clientId, store);
+      } // @patocallaghan - We need to keep a copy of the record so we can recreate the fragment/fragmentArray.
+
+
+      this._record = null;
+      this.fragmentData = Object.create(null);
+      this.serverFragments = Object.create(null);
+      this.inFlightFragments = Object.create(null);
+      this.fragments = Object.create(null); // @patocallaghan - We need to keep the fragment definitions for later on in case we need recreate the fragment or fragmentArray
+
+      this.fragmentDefs = Object.create(null);
+      let defs = store.attributesDefinitionFor(identifier.type, identifier.id, identifier.lid);
+      Object.keys(defs).forEach(key => {
+        let options = defs[key];
+
+        if (options.isFragment) {
+          this.fragmentDefs[key] = defs[key];
+        }
+      });
+      fragmentRecordDatas.set(identifier, this);
+    } // Returns the value of the property or the default propery
+
+
+    getFragmentDataWithDefault(key, options, type) {
+      let data = this.fragmentData[key];
+
+      if (data !== undefined) {
+        return data;
+      }
+
+      return getFragmentDefaultValue(options, type);
+    }
+
+    setupFragment(key, options, declaredModelName, record) {
+      // @patocallaghan -  This is extremely janky way of making sure we always have a copy of the record saved. There must be a better way of doing this?
+      this._record = record;
+      let data = this.getFragmentDataWithDefault(key, options, 'object');
+      let fragment = this.fragments[key];
+
+      if (!data) {
+        this.serverFragments[key] = data;
+        return data;
+      }
+
+      if (!fragment) {
+        fragment = (0, _fragment2.createFragment)(record.store, declaredModelName, record, key, options, data);
+        this.serverFragments[key] = fragment;
+      }
+
+      return fragment;
+    }
+
+    getFragment(key, options, declaredModelName, record) {
+      this._record = record;
+      let fragment = this.getFragmentWithoutCreating(key);
+
+      if (fragment === undefined) {
+        return this.setupFragment(key, options, declaredModelName, record);
+      } else {
+        return fragment;
+      }
+    }
+
+    setFragmentArrayValue(key, fragments, value, record, declaredModelName, options, isFragmentArray) {
+      this._record = record;
+
+      if ((0, _array.isArray)(value)) {
+        if (!fragments) {
+          if (isFragmentArray) {
+            fragments = _fragment.default.create({
+              type: declaredModelName,
+              options: options,
+              name: key,
+              owner: record
+            });
+          } else {
+            fragments = _stateful.default.create({
+              options: options,
+              name: key,
+              owner: record
+            });
+          }
+        }
+
+        fragments.setObjects(value);
+      } else if (value === null) {
+        fragments = null;
+        this.fragments[key] = null;
+      } else {
+        (true && !(false) && (0, _debug.assert)('A fragment array property can only be assigned an array or null'));
+      }
+
+      if (!record._internalModel._recordData.isStateInitializing()) {
+        if (this.serverFragments[key] !== fragments || fragments && (0, _object.get)(fragments, 'hasDirtyAttributes')) {
+          (0, _states.fragmentDidDirty)(record, key, fragments);
+        } else {
+          (0, _states.fragmentDidReset)(record, key);
+        }
+      }
+
+      return fragments;
+    }
+
+    setFragmentValue(key, fragment, value, record, declaredModelName, options) {
+      // Model Fragments are hard tied to DS.Model, and all DS.Models have the store on them.
+      // We need access to the store because EDMF uses the store for `createRecord`
+      this._record = record;
+      let store = record.store;
+      (true && !(value === null || (0, _utils.typeOf)(value) === 'object' || (0, _instanceOfType.default)(store.modelFor(declaredModelName), value)) && (0, _debug.assert)(`You can only assign \`null\`, an object literal or a '${declaredModelName}' fragment instance to this property`, value === null || (0, _utils.typeOf)(value) === 'object' || (0, _instanceOfType.default)(store.modelFor(declaredModelName), value))); // If the fragment was null before or if the new value is not of the same model as the previous one (polymorphism) we should recreate the fragment.
+
+      const shouldRecreateFragment = !fragment || (0, _fragment2.getActualFragmentType)(declaredModelName, options, value, record) !== fragment.constructor.modelName;
+
+      if (!value) {
+        fragment = null;
+      } else if ((0, _fragment2.isFragment)(value)) {
+        // A fragment instance was given, so just replace the existing value
+        fragment = (0, _fragment2.setFragmentOwner)(value, record, key);
+      } else if (shouldRecreateFragment) {
+        // A property hash was given but the property was null, so create a new
+        // fragment with the data
+        fragment = (0, _fragment2.createFragment)(store, declaredModelName, record, key, options, value);
+      } else {
+        // The fragment already exists and a property hash is given, so just set
+        // its values and let the state machine take care of the dirtiness
+        (0, _object.setProperties)(fragment, value);
+        return fragment;
+      }
+
+      if (!record._internalModel._recordData.isStateInitializing()) {
+        if (this.serverFragments[key] !== fragment) {
+          this.fragments[key] = fragment;
+          (0, _states.fragmentDidDirty)(record, key, fragment);
+        } else {
+          (0, _states.fragmentDidReset)(record, key);
+        }
+      }
+
+      return fragment;
+    }
+
+    getFragmentArray(key, options, declaredModelName, record, isFragmentArray) {
+      this._record = record;
+      let data = this.getFragmentDataWithDefault(key, options, 'array');
+      let fragmentArray = this.getFragmentWithoutCreating(key); // If we already have a processed fragment in _data and our current fragment is
+      // null simply reuse the one from data. We can be in this state after a rollback
+      // for example
+
+      if (fragmentArray === undefined) {
+        fragmentArray = this.setupFragmentArray(key, record, data, declaredModelName, options, isFragmentArray);
+        return fragmentArray;
+      } else {
+        return fragmentArray;
+      }
+    }
+
+    setupFragmentArray(key, record, data, declaredModelName, options, isFragmentArray) {
+      this._record = record;
+      let fragmentArray;
+
+      if (data !== null) {
+        if (isFragmentArray) {
+          fragmentArray = _fragment.default.create({
+            type: declaredModelName,
+            options: options,
+            name: key,
+            owner: record
+          });
+        } else {
+          fragmentArray = _stateful.default.create({
+            options: options,
+            name: key,
+            owner: record
+          });
+        }
+
+        fragmentArray.setupData(data);
+      } else {
+        fragmentArray = null;
+      }
+
+      this.serverFragments[key] = fragmentArray;
+      return fragmentArray;
+    }
+
+    getFragmentWithoutCreating(key) {
+      if (this.fragments[key] !== undefined) {
+        return this.fragments[key];
+      } else if (this.inFlightFragments[key] !== undefined) {
+        return this.inFlightFragments[key];
+      } else if (this.serverFragments[key] !== undefined) {
+        return this.serverFragments[key];
+      }
+    }
+
+    isStillInitializing(key) {
+      return !this.getFragmentWithoutCreating(key) || this.isStateInitializing();
+    }
+
+    isStateInitializing() {
+      return true && !this._record.___recordState;
+    } // PUBLIC API
+
+
+    setupFragmentData(data, calculateChange) {
+      let keys = [];
+
+      if (data.attributes) {
+        Object.keys(this.fragmentDefs).forEach(name => {
+          if (calculateChange && this.getFragmentWithoutCreating(name) !== undefined) {
+            keys.push(name);
+          }
+
+          if (name in data.attributes) {
+            this.fragmentData[name] = data.attributes[name];
+            let serverFragment = this.serverFragments[name];
+
+            if (serverFragment) {
+              let fragmentKeys = [];
+
+              if (data.attributes[name] === null) {
+                // if we have data with a Fragment set up, but now we've received null,
+                // delete the null fragment from serverFragments.
+                delete this.serverFragments[name];
+              } else if (serverFragment instanceof _stateful.default) {
+                serverFragment.setupData(data.attributes[name]);
+              } else {
+                fragmentKeys = serverFragment._internalModel._recordData.pushData({
+                  attributes: data.attributes[name]
+                }, calculateChange);
+              }
+
+              if (calculateChange) {
+                // TODO (Custom Model Classes) cleanup this api usage
+                fragmentKeys.forEach(fragmentKey => serverFragment.notifyPropertyChange(fragmentKey));
+              }
+            } else if (serverFragment === null) {
+              // if we received data that set the fragment to null, but now we've received different data,
+              // delete the null fragment from serverFragments.
+              delete this.serverFragments[name];
+            }
+          }
+        });
+      }
+
+      return keys;
+    }
+
+    pushData(tempData, calculateChange) {
+      let data = tempData;
+      let ourAttributes = {};
+
+      if (data.attributes) {
+        Object.keys(this.fragmentDefs).forEach(name => {
+          if (name in data.attributes) {
+            ourAttributes[name] = data.attributes[name];
+            delete data.attributes[name];
+          }
+        });
+      }
+
+      let keys = this.setupFragmentData({
+        attributes: ourAttributes
+      }, calculateChange);
+      let edKeys = super.pushData(data, calculateChange); // TODO: for some reason, tempData is actually being modified. We need to merge
+      // the fragment data back in here so that it's not lost when we go back to the
+      // function calling pushData.
+
+      if (data.attributes) {
+        Object.assign(data.attributes, ourAttributes);
+      }
+
+      return keys.concat(edKeys);
+    }
+
+    willCommit() {
+      let key, fragment;
+
+      for (key in this.fragments) {
+        fragment = this.fragments[key];
+
+        if (fragment) {
+          // TODO (Custom Model Classes) this bad, we should keep track of fragment record datas ourself
+          if (fragment.content) {
+            fragment.content.forEach(frag => {
+              // check to see if the array is a non-fragment array, if so, don't call
+              // method on _internalModel.recordData
+              // TODO: We need to add inFlight details to statefulArray, then change this.
+              if (frag._internalModel) {
+                frag._internalModel._recordData.willCommit();
+              }
+            });
+          } else {
+            fragment._internalModel._recordData.willCommit();
+          }
+        }
+
+        delete this.fragments[key];
+        this.inFlightFragments[key] = fragment;
+      }
+
+      super.willCommit();
+    }
+
+    hasChangedAttributes() {
+      return super.hasChangedAttributes() || Object.keys(this.fragmentDefs).some(fragmentName => {
+        const fragment = this.getFragmentWithoutCreating(fragmentName);
+        return fragment && fragment.hasDirtyAttributes;
+      });
+    }
+
+    resetRecord() {
+      super.resetRecord();
+      this.resetFragments();
+    }
+
+    resetFragments() {
+      let key, fragment;
+
+      for (key in this.fragments) {
+        fragment = this.fragments[key];
+
+        if (fragment) {
+          fragment.destroy();
+          delete this.fragments[key];
+        }
+      }
+
+      for (key in this.inFlightFragments) {
+        fragment = this.inFlightFragments[key];
+
+        if (fragment) {
+          fragment.destroy();
+          delete this.inFlightFragments[key];
+        }
+      }
+
+      for (key in this.serverFragments) {
+        fragment = this.serverFragments[key];
+
+        if (fragment) {
+          fragment.destroy();
+          delete this.serverFragments[key];
+        }
+      }
+    }
+    /*
+        Returns an object, whose keys are changed properties, and value is an
+        [oldProp, newProp] array.
+         @method changedAttributes
+        @private
+      */
+
+
+    changedAttributes() {
+      // NOTE: This is currently implemented in a very odd way in the case where the property on a fragment changes
+      // In that case, the expected return of changedAttributes is [ currentFragment, currentFragment ]
+      // This seems very broken, but might be a breaking change to fix.
+      // See the test named `changes to fragments are indicated in the owner record\'s `changedAttributes`
+      // for more details
+      let ourChanges = super.changedAttributes();
+
+      for (let key of Object.keys(this.fragmentDefs)) {
+        // either the whole fragment was replaced, or a property on the fragment was replaced
+        // this is the case where we replaced the whole framgent
+        let newFragment; // We give priority to client set fragments in this.fragments but fall back to inFlight ones
+        // in case the record is already on the way
+
+        if (this.inFlightFragments[key] !== undefined) {
+          // TODD this code path isn't tested right now
+          newFragment = this.inFlightFragments[key];
+        }
+
+        if (this.fragments[key] !== undefined) {
+          newFragment = this.fragments[key];
+        }
+
+        if (newFragment !== undefined) {
+          // if we have a local fragment defined that means that we set that locally, so we need to diff against whatever was on the server
+          ourChanges[key] = [this.serverFragments[key], this.fragments[key]];
+        } else {
+          // this is the case where the fragment did not change but the props on it might have
+          // TODO diff against server
+          // otherwise we check to see if there are changes on the serverFragment and in that case the whole change is just the
+          // local change of that fragment
+          let fragment = this.serverFragments[key];
+          let hasChanged;
+
+          if (fragment && fragment instanceof _stateful.default) {
+            hasChanged = (0, _object.get)(fragment, 'hasDirtyAttributes');
+          } else if (fragment) {
+            hasChanged = fragment._internalModel._recordData.hasChangedAttributes();
+          }
+
+          if (hasChanged) {
+            // NOTE: As explained above, this is very odd, and we should probably change it.
+            ourChanges[key] = [fragment, fragment];
+          }
+        }
+      }
+
+      return ourChanges;
+    }
+
+    rollbackAttributes() {
+      let keys = [];
+
+      for (let key in this.fragments) {
+        keys.push(key);
+        delete this.fragments[key];
+      }
+
+      Object.keys(this.fragmentDefs).forEach(key => {
+        let fragment = this.getFragmentWithoutCreating(key);
+
+        if (fragment) {
+          fragment.rollbackAttributes();
+          keys.push(key);
+        }
+      });
+      return keys.concat(super.rollbackAttributes());
+    }
+
+    didCommit(data) {
+      let fragment, attributes;
+
+      if (data && data.attributes) {
+        attributes = data.attributes;
+      } else {
+        attributes = Object.create(null);
+      }
+
+      for (let key in this.inFlightFragments) {
+        fragment = this.inFlightFragments[key];
+        delete this.inFlightFragments[key];
+        this.serverFragments[key] = fragment;
+      }
+
+      Object.keys(this.fragmentDefs).forEach(key => {
+        fragment = this.serverFragments[key]; // @patocallaghan - So basically if the existing fragment/fragmentArray is null but it is part of the response we need to recreate the fragment/fragment array and re-add it to the record.
+        // Unfortunately we have no access to the `record` (is there a way to get it from `RecordData`?) in this codepath hence why we need to do the `this._record` hack.
+
+        if (!fragment && attributes[key] && this._record) {
+          let def = this.fragmentDefs[key];
+          let declaredModelName = def.type.split('$')[1];
+
+          if (def.type.includes('-array')) {
+            fragment = this.setupFragmentArray(key, this._record, attributes[key], declaredModelName, def.options, def.type.includes('fragment-array'));
+          } else {
+            fragment = (0, _fragment2.createFragment)(this._record.store, def.type.split('$')[1], this._record, key, def.options, attributes[key]);
+          } // @patocallaghan - Not sure of the repercussions of just re-assigning the new fragment here. Should it be done a better way?
+
+
+          this._record[key] = fragment;
+        }
+
+        if (fragment) {
+          fragment._didCommit(attributes[key]);
+        }
+
+        delete attributes[key];
+      });
+      return super.didCommit(data);
+    }
+
+    commitWasRejected() {
+      let key, fragment;
+
+      for (key in this.inFlightFragments) {
+        fragment = this.inFlightFragments[key];
+        delete this.inFlightFragments[key];
+
+        if (this.fragments[key] === undefined) {
+          this.fragments[key] = fragment;
+        }
+
+        if (fragment) {
+          // TODO this bad, we should keep track of fragment record datas ourself
+          if (fragment.content) {
+            fragment.content.forEach(frag => {
+              // check to see if the array is a non-fragment array, if so, don't call
+              // method on _internalModel.recordData
+              // TODO: We need to add inFlight details to statefulArray, then change this.
+              if (frag._internalModel) {
+                frag._internalModel._recordData.commitWasRejected();
+              }
+            });
+          } else {
+            fragment._internalModel._recordData.commitWasRejected();
+          }
+        }
+      }
+
+      return super.commitWasRejected(...arguments);
+    }
+
+    setAttr(key, value) {
+      return super.setAttr(key, value);
+    }
+
+    getAttr(key) {
+      return super.getAttr(key);
+    }
+
+    hasAttr(key) {
+      return super.hasAttr(key);
+    }
+
+    didCreateLocally() {
+      return super.didCreateLocally();
+    }
+
+  }
+
+  _exports.default = FragmentRecordData;
+
+  // The default value of a fragment is either an array or an object,
+  // which should automatically get deep copied
+  function getFragmentDefaultValue(options, type) {
+    let value;
+
+    if (typeof options.defaultValue === 'function') {
+      return options.defaultValue();
+    } else if ('defaultValue' in options) {
+      value = options.defaultValue;
+    } else if (type === 'array') {
+      value = [];
+    } else {
+      return null;
+    }
+
+    (true && !((0, _utils.typeOf)(value) == type || value === null) && (0, _debug.assert)(`The fragment's default value must be an ${type}`, (0, _utils.typeOf)(value) == type || value === null)); // Create a deep copy of the resulting value to avoid shared reference errors
+
+    return (0, _emberCopy.copy)(value, true);
+  }
+});
+;define("ember-data-model-fragments/states", ["exports", "@ember/object", "ember-data/-private"], function (_exports, _object, _private) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+  _exports.fragmentDidDirty = fragmentDidDirty;
+  _exports.fragmentDidReset = fragmentDidReset;
+  // eslint-disable-next-line ember/use-ember-data-rfc-395-imports
+
+  /**
+    @module ember-data-model-fragments
+  */
+  const didSetProperty = _private.RootState.loaded.saved.didSetProperty;
+  const propertyWasReset = _private.RootState.loaded.updated.uncommitted.propertyWasReset;
+
+  const dirtySetup = function (internalModel) {
+    let record = internalModel._recordData._owner;
+    let key = internalModel._recordData._name; // A newly created fragment may not have an owner yet
+
+    if (record) {
+      fragmentDidDirty(record, key, internalModel);
+    }
+  };
+  /**
+    Like `DS.Model` instances, all fragments have a `currentState` property
+    that reflects where they are in the model lifecycle. However, there are much
+    fewer states that a fragment can be in, since the `loading` state doesn't
+    apply, `inFlight` states are no different than the owner record's, and there
+    is no concept of a `deleted` state.
+  
+    This is the simplified hierarchy of valid states for a fragment:
+  
+    ```text
+    * root
+      * empty
+      * loaded
+        * created
+        * saved
+        * updated
+    ```
+  
+    Note that there are no `uncommitted` sub-states because it's implied by the
+    `created` and `updated` states (since there are no `inFlight` substates).
+  
+    @class FragmentRootState
+  */
+
+
+  let FragmentRootState = {
+    // Include all `DS.Model` state booleans for consistency
+    isEmpty: false,
+    isLoading: false,
+    isLoaded: false,
+    isDirty: false,
+    isSaving: false,
+    isDeleted: false,
+    isNew: false,
+    isValid: true,
+    didSetProperty: didSetProperty,
+
+    propertyWasReset() {},
+
+    becomeDirty() {},
+
+    rolledBack() {},
+
+    empty: {
+      isEmpty: true,
+
+      loadedData(internalModel) {
+        internalModel.transitionTo('loaded.created');
+      },
+
+      pushedData(internalModel) {
+        internalModel.transitionTo('loaded.saved');
+      }
+
+    },
+    loaded: {
+      unloadRecord() {},
+
+      pushedData(internalModel) {
+        internalModel.transitionTo('saved');
+      },
+
+      saved: {
+        setup(internalModel) {
+          let record = internalModel._recordData._owner;
+          let key = internalModel._recordData._name; // Abort if fragment is still initializing
+
+          if (record._internalModel._recordData.isStillInitializing(key)) {
+            return;
+          } // Reset the property on the owner record if no other siblings
+          // are dirty (or there are no siblings)
+
+
+          if (!(0, _object.get)(record, `${key}.hasDirtyAttributes`)) {
+            fragmentDidReset(record, key, internalModel);
+          }
+        },
+
+        pushedData() {},
+
+        didCommit() {},
+
+        becomeDirty(internalModel) {
+          internalModel.transitionTo('updated');
+        }
+
+      },
+      created: {
+        isDirty: true,
+        isNew: true,
+        setup: dirtySetup,
+
+        didCommit(internalModel) {
+          internalModel.transitionTo('saved');
+        }
+
+      },
+      updated: {
+        isDirty: true,
+        setup: dirtySetup,
+        propertyWasReset: propertyWasReset,
+
+        didCommit(internalModel) {
+          internalModel.transitionTo('saved');
+        },
+
+        rolledBack(internalModel) {
+          internalModel.transitionTo('saved');
+        }
+
+      }
+    }
+  };
+
+  function mixin(original, hash) {
+    for (let prop in hash) {
+      original[prop] = hash[prop];
+    }
+
+    return original;
+  } // Wouldn't it be awesome if this was public?
+
+
+  function wireState(object, parent, name) {
+    object = mixin(parent ? Object.create(parent) : {}, object);
+    object.parentState = parent;
+    object.stateName = name;
+
+    for (let prop in object) {
+      // eslint-disable-next-line no-prototype-builtins
+      if (!object.hasOwnProperty(prop) || prop === 'parentState' || prop === 'stateName') {
+        continue;
+      }
+
+      if (typeof object[prop] === 'object') {
+        object[prop] = wireState(object[prop], object, `${name}.${prop}`);
+      }
+    }
+
+    return object;
+  }
+
+  FragmentRootState = wireState(FragmentRootState, null, 'root');
+  var _default = FragmentRootState;
+  _exports.default = _default;
+
+  function fragmentDidDirty(record) {
+    if (!record.currentState.isDeleted) {
+      record.send('becomeDirty');
+    }
+  }
+
+  function fragmentDidReset(record, key) {
+    // Make sure there's no entry in the owner record's
+    // `_attributes` hash to indicate the fragment is dirty
+    // delete record._internalModel._attributes[key];
+    // Don't reset if the record is new, otherwise it will enter the 'deleted' state
+    // NOTE: This case almost never happens with attributes because their initial value
+    // is always undefined, which is *usually* not what attributes get 'reset' to
+    if (!record.currentState.isNew) {
+      record.send('propertyWasReset', key);
+    }
+  }
+});
+;define("ember-data-model-fragments/transforms/array", ["exports", "@ember/debug", "@ember/application", "@ember/array", "@ember/object", "@ember-data/serializer/transform", "@ember/service"], function (_exports, _debug, _application, _array, _object, _transform, _service) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  /**
+    @module ember-data-model-fragments
+  */
+
+  /**
+    Transform for `MF.array` that transforms array data with the given transform
+    type.
+  
+    @class ArrayTransform
+    @namespace MF
+    @extends DS.Transform
+  */
+  const ArrayTransform = _transform.default.extend({
+    store: (0, _service.inject)(),
+    type: null,
+    deserialize: function deserializeArray(data) {
+      if (data == null) {
+        return null;
+      }
+
+      let transform = this.transform;
+      data = (0, _array.makeArray)(data);
+
+      if (!transform) {
+        return data;
+      }
+
+      return data.map(transform.deserialize, transform);
+    },
+    serialize: function serializeArray(array) {
+      if (array == null) {
+        return null;
+      }
+
+      let transform = this.transform;
+      array = array.toArray ? array.toArray() : array;
+
+      if (!transform) {
+        return array;
+      }
+
+      return array.map(transform.serialize, transform);
+    },
+    transform: (0, _object.computed)('type', function () {
+      let attributeType = this.type;
+
+      if (!attributeType) {
+        return null;
+      }
+
+      let transform = (0, _application.getOwner)(this).lookup(`transform:${attributeType}`);
+      (true && !(!!transform) && (0, _debug.assert)(`Unable to find transform for '${attributeType}'`, !!transform));
+      return transform;
+    })
+  });
+
+  var _default = ArrayTransform;
+  _exports.default = _default;
+});
+;define("ember-data-model-fragments/transforms/fragment-array", ["exports", "ember-data-model-fragments/transforms/fragment"], function (_exports, _fragment) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  /**
+    @module ember-data-model-fragments
+  */
+
+  /**
+    Transform for `MF.fragmentArray` fragment attribute which delegates work to
+    the fragment type's serializer
+  
+    @class FragmentArrayTransform
+    @namespace MF
+    @extends DS.Transform
+  */
+  const FragmentArrayTransform = _fragment.default.extend({
+    deserialize: function deserializeFragmentArray(data, options, parentData) {
+      if (data == null) {
+        return null;
+      }
+
+      return data.map(datum => {
+        return this.deserializeSingle(datum, options, parentData);
+      }, this);
+    },
+    serialize: function serializeFragmentArray(snapshots) {
+      if (!snapshots) {
+        return null;
+      }
+
+      let store = this.store;
+      return snapshots.map(snapshot => {
+        const realSnapshot = snapshot._createSnapshot ? snapshot._createSnapshot() : snapshot;
+        let serializer = store.serializerFor(realSnapshot.modelName || realSnapshot.constructor.modelName);
+        return serializer.serialize(realSnapshot);
+      });
+    }
+  });
+
+  var _default = FragmentArrayTransform;
+  _exports.default = _default;
+});
+;define("ember-data-model-fragments/transforms/fragment", ["exports", "@ember/debug", "@ember/object", "@ember-data/serializer/transform", "@ember-data/serializer/json-api", "@ember/service"], function (_exports, _debug, _object, _transform, _jsonApi, _service) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  /**
+    @module ember-data-model-fragments
+  */
+
+  /**
+    Transform for `MF.fragment` fragment attribute which delegates work to
+    the fragment type's serializer
+  
+    @class FragmentTransform
+    @namespace MF
+    @extends DS.Transform
+  */
+  const FragmentTransform = _transform.default.extend({
+    store: (0, _service.inject)(),
+    type: null,
+    polymorphicTypeProp: null,
+    deserialize: function deserializeFragment(data, options, parentData) {
+      if (data == null) {
+        return null;
+      }
+
+      return this.deserializeSingle(data, options, parentData);
+    },
+    serialize: function serializeFragment(snapshot) {
+      if (!snapshot) {
+        return null;
+      }
+
+      let store = this.store;
+      const realSnapshot = snapshot._createSnapshot ? snapshot._createSnapshot() : snapshot;
+      let serializer = store.serializerFor(realSnapshot.modelName || realSnapshot.constructor.modelName);
+      return serializer.serialize(realSnapshot);
+    },
+
+    modelNameFor(data, options, parentData) {
+      let modelName = this.type;
+      let polymorphicTypeProp = this.polymorphicTypeProp;
+
+      if (data && polymorphicTypeProp && data[polymorphicTypeProp]) {
+        modelName = data[polymorphicTypeProp];
+      } else if (options && typeof options.typeKey === 'function') {
+        modelName = options.typeKey(data, parentData);
+      }
+
+      return modelName;
+    },
+
+    deserializeSingle(data, options, parentData) {
+      let store = this.store;
+      let modelName = this.modelNameFor(data, options, parentData);
+      let serializer = store.serializerFor(modelName);
+      (true && !(!(serializer instanceof _jsonApi.default)) && (0, _debug.assert)('The `JSONAPISerializer` is not suitable for model fragments, please use `JSONSerializer`', !(serializer instanceof _jsonApi.default)));
+      let typeClass = store.modelFor(modelName);
+      let serialized = serializer.normalize(typeClass, data); // `JSONSerializer#normalize` returns a full JSON API document, but we only
+      // need the attributes hash
+
+      return (0, _object.get)(serialized, 'data.attributes');
+    }
+
+  });
+
+  var _default = FragmentTransform;
+  _exports.default = _default;
+});
+;define("ember-data-model-fragments/util/instance-of-type", ["exports"], function (_exports) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = isInstanceOfType;
+
+  // Check whether a object is an instance of the given type, respecting model
+  // factory injections
+  function isInstanceOfType(type, obj) {
+    return obj instanceof type;
+  }
+});
+;define("ember-data-model-fragments/version", ["exports"], function (_exports) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+  var _default = "5.0.0-beta.8";
+  _exports.default = _default;
 });
 ;define('ember-data/-private', ['exports', '@ember-data/store', '@ember/application/namespace', 'ember', 'ember-data/version', '@ember-data/model/-private', '@ember-data/store/-private', '@ember-data/record-data/-private'], (function (exports, store, Namespace, Ember, VERSION, Private, Private$1, Private$2) { 'use strict';
 
@@ -102470,36 +105705,36 @@ var __ember_auto_import__ =
 /************************************************************************/
 /******/ ({
 
-/***/ "../../../../../private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/app.js":
+/***/ "../../../../../private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/app.js":
 /*!****************************************************************************************************************************!*\
-  !*** /private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/app.js ***!
+  !*** /private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/app.js ***!
   \****************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("\nif (typeof document !== 'undefined') {\n  __webpack_require__.p = (function(){\n    var scripts = document.querySelectorAll('script');\n    return scripts[scripts.length - 1].src.replace(/\\/[^/]*$/, '/');\n  })();\n}\n\nmodule.exports = (function(){\n  var d = _eai_d;\n  var r = _eai_r;\n  window.emberAutoImportDynamic = function(specifier) {\n    if (arguments.length === 1) {\n      return r('_eai_dyn_' + specifier);\n    } else {\n      return r('_eai_dynt_' + specifier)(Array.prototype.slice.call(arguments, 1))\n    }\n  };\n})();\n\n\n//# sourceURL=webpack://__ember_auto_import__//private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/app.js?");
+eval("\nif (typeof document !== 'undefined') {\n  __webpack_require__.p = (function(){\n    var scripts = document.querySelectorAll('script');\n    return scripts[scripts.length - 1].src.replace(/\\/[^/]*$/, '/');\n  })();\n}\n\nmodule.exports = (function(){\n  var d = _eai_d;\n  var r = _eai_r;\n  window.emberAutoImportDynamic = function(specifier) {\n    if (arguments.length === 1) {\n      return r('_eai_dyn_' + specifier);\n    } else {\n      return r('_eai_dynt_' + specifier)(Array.prototype.slice.call(arguments, 1))\n    }\n  };\n})();\n\n\n//# sourceURL=webpack://__ember_auto_import__//private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/app.js?");
 
 /***/ }),
 
-/***/ "../../../../../private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/l.js":
+/***/ "../../../../../private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/l.js":
 /*!**************************************************************************************************************************!*\
-  !*** /private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/l.js ***!
+  !*** /private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/l.js ***!
   \**************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("\nwindow._eai_r = require;\nwindow._eai_d = define;\n\n\n//# sourceURL=webpack://__ember_auto_import__//private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/l.js?");
+eval("\nwindow._eai_r = require;\nwindow._eai_d = define;\n\n\n//# sourceURL=webpack://__ember_auto_import__//private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/l.js?");
 
 /***/ }),
 
 /***/ 0:
 /*!*****************************************************************************************************************************************************************************************************************************************************!*\
-  !*** multi /private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/l.js /private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/app.js ***!
+  !*** multi /private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/l.js /private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/app.js ***!
   \*****************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__(/*! /private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/l.js */\"../../../../../private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/l.js\");\nmodule.exports = __webpack_require__(/*! /private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/app.js */\"../../../../../private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/app.js\");\n\n\n//# sourceURL=webpack://__ember_auto_import__/multi_/private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/l.js_/private/var/folders/hc/f51mwh8n1j199b9skh78hqy40000gn/T/broccoli-10080dt2YYXFsdsbe/cache-316-bundler/staging/app.js?");
+eval("__webpack_require__(/*! /private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/l.js */\"../../../../../private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/l.js\");\nmodule.exports = __webpack_require__(/*! /private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/app.js */\"../../../../../private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/app.js\");\n\n\n//# sourceURL=webpack://__ember_auto_import__/multi_/private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/l.js_/private/var/folders/ww/m1b1rcn17fs34dp0fvbp9_t40000gn/T/broccoli-68267S563oMNBLxhQ/cache-330-bundler/staging/app.js?");
 
 /***/ })
 

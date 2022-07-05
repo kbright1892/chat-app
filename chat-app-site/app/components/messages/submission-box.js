@@ -8,14 +8,11 @@ export default class SubmissionBoxComponent extends Component {
   @tracked input = '';
 
   @action submit() {
-    console.log('clicked');
     if (this.input != '') {
       let newSubmission = this.store.createRecord('message', {
         text: this.input,
       });
-
       newSubmission.save();
-      this.store.push();
       this.input = '';
     }
   }

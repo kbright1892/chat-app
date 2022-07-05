@@ -3,7 +3,8 @@
     class = "text-box"
     @value={{this.input}}
     class="light"
-    placeholder="Type new message here"
+    placeholder="Enter a new message into the log"
+    maxlength="100"
   />
-  <button type="button" {{on "click" this.submit}}>Submit</button>
+  <button type="button" class="submit-button" {{on "click" this.submit}}>Submit</button>
 </div>

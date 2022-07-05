@@ -281,6 +281,17 @@ define("chat-app-site/tests/unit/routes/index-test", ["qunit", "ember-qunit"], f
     });
   });
 });
+define("chat-app-site/tests/unit/routes/message-test", ["qunit", "ember-qunit"], function (_qunit, _emberQunit) {
+  "use strict";
+
+  (0, _qunit.module)('Unit | Route | message', function (hooks) {
+    (0, _emberQunit.setupTest)(hooks);
+    (0, _qunit.test)('it exists', function (assert) {
+      let route = this.owner.lookup('route:message');
+      assert.ok(route);
+    });
+  });
+});
 define('chat-app-site/config/environment', [], function() {
   var prefix = 'chat-app-site';
 try {

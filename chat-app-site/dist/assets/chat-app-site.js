@@ -981,8 +981,8 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "oHbaD1WZ",
-    "block": "[[[8,[39,0],null,null,[[\"default\"],[[[],[]]]]],[1,\"\\n\"],[10,0],[14,0,\"gen-text\"],[12],[10,\"h3\"],[12],[1,\"Click \\\"All Messages\\\" to view the history\"],[13],[13],[1,\"\\n\\n\"]],[],false,[\"messages/submission-box\"]]",
+    "id": "fB/yCXMm",
+    "block": "[[[1,[28,[35,0],[\"Welcome to ChatApp\"],null]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[],[]]]]],[1,\"\\n\"],[10,0],[14,0,\"gen-text\"],[12],[10,\"h3\"],[12],[1,\"Click \\\"All Messages\\\" to view the history\"],[13],[13],[1,\"\\n\\n\"]],[],false,[\"page-title\",\"messages/submission-box\"]]",
     "moduleName": "chat-app-site/templates/index.hbs",
     "isStrictMode": false
   });
@@ -998,8 +998,8 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "8U7n+LMl",
-    "block": "[[[1,[28,[35,0],[\"Message\"],null]],[1,\"\\n\"],[8,[39,1],null,[[\"@message\"],[[30,1]]],null],[1,\"\\n\\n\"]],[\"@model\"],false,[\"page-title\",\"messages/edit-box\"]]",
+    "id": "PdINxwCR",
+    "block": "[[[1,[28,[35,0],[\"Edit Message\"],null]],[1,\"\\n\"],[8,[39,1],null,[[\"@message\"],[[30,1]]],null],[1,\"\\n\"],[10,0],[14,0,\"back-button\"],[12],[1,\"\\n  \"],[8,[39,2],[[24,0,\"submit-button\"]],[[\"@route\"],[\"allmessages\"]],[[\"default\"],[[[[1,\"Back\"]],[]]]]],[1,\"\\n\"],[13],[1,\"\\n\"]],[\"@model\"],false,[\"page-title\",\"messages/edit-box\",\"link-to\"]]",
     "moduleName": "chat-app-site/templates/message.hbs",
     "isStrictMode": false
   });
@@ -1111,7 +1111,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+94a3f0a8"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+5ae3991c"});
           }
         
 //# sourceMappingURL=chat-app-site.map

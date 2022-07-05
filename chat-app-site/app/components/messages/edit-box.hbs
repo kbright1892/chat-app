@@ -1,0 +1,10 @@
+<div>
+  <Input
+    class = "text-box"
+    @value={{@message.text}}
+    class="light"
+    maxlength="100"
+  />
+  <button type="button" class="submit-button" {{on "click" this.update}}>Update</button>
+  <button type="button" class="submit-button" {{on "click" this.delete}}>Delete Message</button>
+</div>

@@ -1,4 +1,7 @@
+{{page-title "All Messages"}}
 {{#each @model as |message|}}
-  <Message @message={{message}} />
-  <LinkTo @route="message.edit" @model={{message}}>Edit</LinkTo>
+  <div class="edit-row">
+    <Message @message={{message}} />
+    <LinkTo class="edit-button" @route="message" @model={{message}}>Edit</LinkTo>
+  </div>
 {{/each}}

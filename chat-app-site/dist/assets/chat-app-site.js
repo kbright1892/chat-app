@@ -126,6 +126,87 @@
 
   _exports.default = _default;
 });
+;define("chat-app-site/components/messages/edit-box", ["exports", "@ember/component", "@ember/template-factory", "@glimmer/component", "@ember/object", "@ember/service", "@glimmer/tracking"], function (_exports, _component, _templateFactory, _component2, _object, _service, _tracking) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _class, _descriptor, _descriptor2, _descriptor3;
+
+  function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+  function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+  const __COLOCATED_TEMPLATE__ = (0, _templateFactory.createTemplateFactory)(
+  /*
+    <div>
+    <Input
+      class = "text-box"
+      @value={{@message.text}}
+      class="light"
+      maxlength="100"
+    />
+    <button type="button" class="submit-button" {{on "click" this.update}}>Update</button>
+    <button type="button" class="submit-button" {{on "click" this.delete}}>Delete Message</button>
+  </div>
+  */
+  {
+    "id": "b4tVJuXb",
+    "block": "[[[10,0],[12],[1,\"\\n  \"],[8,[39,0],[[24,0,\"text-box\"],[24,0,\"light\"],[24,\"maxlength\",\"100\"]],[[\"@value\"],[[30,1,[\"text\"]]]],null],[1,\"\\n  \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"button\"],[4,[38,1],[\"click\",[30,0,[\"update\"]]],null],[12],[1,\"Update\"],[13],[1,\"\\n  \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"button\"],[4,[38,1],[\"click\",[30,0,[\"delete\"]]],null],[12],[1,\"Delete Message\"],[13],[1,\"\\n\"],[13]],[\"@message\"],false,[\"input\",\"on\"]]",
+    "moduleName": "chat-app-site/components/messages/edit-box.hbs",
+    "isStrictMode": false
+  });
+
+  let MessagesEditBoxComponent = (_class = class MessagesEditBoxComponent extends _component2.default {
+    constructor() {
+      super(...arguments);
+
+      _initializerDefineProperty(this, "store", _descriptor, this);
+
+      _initializerDefineProperty(this, "router", _descriptor2, this);
+
+      _initializerDefineProperty(this, "msg_id", _descriptor3, this);
+    }
+
+    update() {
+      let message = this.store.peekRecord('message', this.args.message.id);
+      message.save();
+      this.router.transitionTo('allmessages');
+    }
+
+    delete() {
+      let message = this.store.peekRecord('message', this.args.message.id);
+      message.deleteRecord();
+      message.save();
+      this.router.transitionTo('allmessages');
+    }
+
+  }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "store", [_service.inject], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  }), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "router", [_service.inject], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  }), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "msg_id", [_tracking.tracked], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  }), _applyDecoratedDescriptor(_class.prototype, "update", [_object.action], Object.getOwnPropertyDescriptor(_class.prototype, "update"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "delete", [_object.action], Object.getOwnPropertyDescriptor(_class.prototype, "delete"), _class.prototype)), _class);
+  _exports.default = MessagesEditBoxComponent;
+  (0, _component.setComponentTemplate)(__COLOCATED_TEMPLATE__, MessagesEditBoxComponent);
+});
 ;define("chat-app-site/components/messages/submission-box", ["exports", "@ember/component", "@ember/template-factory", "@glimmer/component", "@glimmer/tracking", "@ember/object", "@ember/service"], function (_exports, _component, _templateFactory, _component2, _tracking, _object, _service) {
   "use strict";
 
@@ -151,15 +232,15 @@
       class = "text-box"
       @value={{this.input}}
       class="light"
-      placeholder="Enter a new message into the log"
+      placeholder="Enter a new message into the log (max. 100 characters)"
       maxlength="100"
     />
     <button type="button" class="submit-button" {{on "click" this.submit}}>Submit</button>
   </div>
   */
   {
-    "id": "x2xCX88f",
-    "block": "[[[10,0],[12],[1,\"\\n  \"],[8,[39,0],[[24,0,\"text-box\"],[24,0,\"light\"],[24,\"placeholder\",\"Enter a new message into the log\"],[24,\"maxlength\",\"100\"]],[[\"@value\"],[[30,0,[\"input\"]]]],null],[1,\"\\n  \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"button\"],[4,[38,1],[\"click\",[30,0,[\"submit\"]]],null],[12],[1,\"Submit\"],[13],[1,\"\\n\"],[13]],[],false,[\"input\",\"on\"]]",
+    "id": "Ksc+qN2c",
+    "block": "[[[10,0],[12],[1,\"\\n  \"],[8,[39,0],[[24,0,\"text-box\"],[24,0,\"light\"],[24,\"placeholder\",\"Enter a new message into the log (max. 100 characters)\"],[24,\"maxlength\",\"100\"]],[[\"@value\"],[[30,0,[\"input\"]]]],null],[1,\"\\n  \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"button\"],[4,[38,1],[\"click\",[30,0,[\"submit\"]]],null],[12],[1,\"Submit\"],[13],[1,\"\\n\"],[13]],[],false,[\"input\",\"on\"]]",
     "moduleName": "chat-app-site/components/messages/submission-box.hbs",
     "isStrictMode": false
   });
@@ -622,10 +703,8 @@
   Router.map(function () {
     this.route('about');
     this.route('allmessages');
-    this.route('message', function () {
-      this.route('edit', {
-        path: '/:id'
-      });
+    this.route('message', {
+      path: '/message/:id'
     });
   });
 });
@@ -641,7 +720,7 @@
 
   _exports.default = AboutRoute;
 });
-;define("chat-app-site/routes/allmessages", ["exports", "@ember/routing/route"], function (_exports, _route) {
+;define("chat-app-site/routes/allmessages", ["exports", "@ember/routing/route", "@ember/service"], function (_exports, _route, _service) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -649,13 +728,33 @@
   });
   _exports.default = void 0;
 
-  class AllmessagesRoute extends _route.default {
+  var _class, _descriptor;
+
+  function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+  function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+  let AllmessagesRoute = (_class = class AllmessagesRoute extends _route.default {
+    constructor() {
+      super(...arguments);
+
+      _initializerDefineProperty(this, "store", _descriptor, this);
+    }
+
     async model() {
       return this.store.findAll('message');
     }
 
-  }
-
+  }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "store", [_service.inject], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  })), _class);
   _exports.default = AllmessagesRoute;
 });
 ;define("chat-app-site/routes/index", ["exports", "@ember/routing/route"], function (_exports, _route) {
@@ -666,12 +765,7 @@
   });
   _exports.default = void 0;
 
-  class IndexRoute extends _route.default {
-    async model() {
-      return this.store.findAll('message');
-    }
-
-  }
+  class IndexRoute extends _route.default {}
 
   _exports.default = IndexRoute;
 });
@@ -700,8 +794,8 @@
       _initializerDefineProperty(this, "store", _descriptor, this);
     }
 
-    async model(params) {
-      return this.store.find('message', params.id);
+    async model() {
+      return this.store.find('message', this.args.message.id);
     }
 
   }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "store", [_service.inject], {
@@ -836,8 +930,8 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "Us/ODVi3",
-    "block": "[[[1,[28,[35,0],[\"About\"],null]],[1,\"\\nWhat do you want me to say? You clicked the link, didn't you? You're just here to talk to yourself, anyway.\"]],[],false,[\"page-title\"]]",
+    "id": "hS3TuL8Q",
+    "block": "[[[1,[28,[35,0],[\"About\"],null]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[[1,\"What do you want me to say?\"]],[]]]]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[[1,\"You clicked the About link, didn't you?\"]],[]]]]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[[1,\"You're just here to talk to yourself, anyway.\"]],[]]]]]],[],false,[\"page-title\",\"text-box\"]]",
     "moduleName": "chat-app-site/templates/about.hbs",
     "isStrictMode": false
   });
@@ -853,8 +947,8 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "Z/7QDwtW",
-    "block": "[[[42,[28,[37,1],[[28,[37,1],[[30,1]],null]],null],null,[[[1,\"  \"],[8,[39,2],null,[[\"@message\"],[[30,2]]],null],[1,\"\\n  \"],[8,[39,3],null,[[\"@route\",\"@model\"],[\"message.edit\",[30,2]]],[[\"default\"],[[[[1,\"Edit\"]],[]]]]],[1,\"\\n\"]],[2]],null]],[\"@model\",\"message\"],false,[\"each\",\"-track-array\",\"message\",\"link-to\"]]",
+    "id": "x4R+MuuK",
+    "block": "[[[1,[28,[35,0],[\"All Messages\"],null]],[1,\"\\n\"],[42,[28,[37,2],[[28,[37,2],[[30,1]],null]],null],null,[[[1,\"  \"],[10,0],[14,0,\"edit-row\"],[12],[1,\"\\n    \"],[8,[39,3],null,[[\"@message\"],[[30,2]]],null],[1,\"\\n    \"],[8,[39,4],[[24,0,\"edit-button\"]],[[\"@route\",\"@model\"],[\"message\",[30,2]]],[[\"default\"],[[[[1,\"Edit\"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n\"]],[2]],null]],[\"@model\",\"message\"],false,[\"page-title\",\"each\",\"-track-array\",\"message\",\"link-to\"]]",
     "moduleName": "chat-app-site/templates/allmessages.hbs",
     "isStrictMode": false
   });
@@ -887,8 +981,8 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "GT6SX5PY",
-    "block": "[[[8,[39,0],null,null,[[\"default\"],[[[],[]]]]],[1,\"\\n\"],[10,\"h3\"],[12],[1,\"Click \\\"All Messages\\\" to view the history\"],[13],[1,\"\\n\\n\"]],[],false,[\"messages/submission-box\"]]",
+    "id": "oHbaD1WZ",
+    "block": "[[[8,[39,0],null,null,[[\"default\"],[[[],[]]]]],[1,\"\\n\"],[10,0],[14,0,\"gen-text\"],[12],[10,\"h3\"],[12],[1,\"Click \\\"All Messages\\\" to view the history\"],[13],[13],[1,\"\\n\\n\"]],[],false,[\"messages/submission-box\"]]",
     "moduleName": "chat-app-site/templates/index.hbs",
     "isStrictMode": false
   });
@@ -904,8 +998,8 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "MNVv0dPY",
-    "block": "[[[1,[28,[35,0],[\"Message\"],null]],[1,\"\\n\"],[8,[39,1],null,[[\"@message\"],[[30,1]]],null]],[\"@model\"],false,[\"page-title\",\"message\"]]",
+    "id": "8U7n+LMl",
+    "block": "[[[1,[28,[35,0],[\"Message\"],null]],[1,\"\\n\"],[8,[39,1],null,[[\"@message\"],[[30,1]]],null],[1,\"\\n\\n\"]],[\"@model\"],false,[\"page-title\",\"messages/edit-box\"]]",
     "moduleName": "chat-app-site/templates/message.hbs",
     "isStrictMode": false
   });
@@ -1017,7 +1111,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+fcf048c3"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+94a3f0a8"});
           }
         
 //# sourceMappingURL=chat-app-site.map

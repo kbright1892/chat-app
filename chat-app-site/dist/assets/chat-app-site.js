@@ -1111,7 +1111,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+5ae3991c"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+e2179f5a"});
           }
         
 //# sourceMappingURL=chat-app-site.map

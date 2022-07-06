@@ -709,7 +709,7 @@
 
   _exports.default = IndexRoute;
 });
-;define("chat-app-site/routes/message", ["exports", "@ember/routing/route", "@ember/service"], function (_exports, _route, _service) {
+;define("chat-app-site/routes/message", ["exports", "@ember/routing/route"], function (_exports, _route) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -717,36 +717,16 @@
   });
   _exports.default = void 0;
 
-  var _class, _descriptor;
-
-  function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
-
-  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
-
-  function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
-  let MessageRoute = (_class = class MessageRoute extends _route.default {
-    constructor() {
-      super(...arguments);
-
-      _initializerDefineProperty(this, "store", _descriptor, this);
-    }
-
+  class MessageRoute extends _route.default {
     async model() {
       return this.store.find('message', this.args.message.id);
     }
 
-  }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "store", [_service.inject], {
-    configurable: true,
-    enumerable: true,
-    writable: true,
-    initializer: null
-  })), _class);
+  }
+
   _exports.default = MessageRoute;
 });
-;define("chat-app-site/routes/messages", ["exports", "@ember/routing/route", "@ember/service"], function (_exports, _route, _service) {
+;define("chat-app-site/routes/messages", ["exports", "@ember/routing/route"], function (_exports, _route) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -754,33 +734,13 @@
   });
   _exports.default = void 0;
 
-  var _class, _descriptor;
-
-  function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
-
-  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
-
-  function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
-  let MessagesRoute = (_class = class MessagesRoute extends _route.default {
-    constructor() {
-      super(...arguments);
-
-      _initializerDefineProperty(this, "store", _descriptor, this);
-    }
-
+  class MessagesRoute extends _route.default {
     async model() {
       return this.store.findAll('message');
     }
 
-  }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "store", [_service.inject], {
-    configurable: true,
-    enumerable: true,
-    writable: true,
-    initializer: null
-  })), _class);
+  }
+
   _exports.default = MessagesRoute;
 });
 ;define("chat-app-site/serializers/-default", ["exports", "@ember-data/serializer/json"], function (_exports, _json) {
@@ -1088,7 +1048,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+44a86e5f"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+920817d3"});
           }
         
 //# sourceMappingURL=chat-app-site.map

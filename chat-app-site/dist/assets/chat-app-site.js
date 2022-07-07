@@ -124,19 +124,21 @@
   const __COLOCATED_TEMPLATE__ = (0, _templateFactory.createTemplateFactory)(
   /*
     <div>
-    <Input
-      class = "text-box"
-      @value={{@message.text}}
-      class="light"
-      maxlength="100"
-    />
-    <button type="button" class="submit-button" {{on "click" this.update}}>Update</button>
-    <button type="button" class="submit-button" {{on "click" this.delete}}>Delete Message</button>
+      <form>
+          <Input
+                  class = "text-box"
+                  @value={{@message.text}}
+                  class="light"
+                  maxlength="100"
+          />
+          <button type="submit" class="submit-button" {{on "click" this.update}}>Update</button>
+          <button type="button" class="submit-button" {{on "click" this.delete}}>Delete Message</button>
+      </form>
   </div>
   */
   {
-    "id": "b4tVJuXb",
-    "block": "[[[10,0],[12],[1,\"\\n  \"],[8,[39,0],[[24,0,\"text-box\"],[24,0,\"light\"],[24,\"maxlength\",\"100\"]],[[\"@value\"],[[30,1,[\"text\"]]]],null],[1,\"\\n  \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"button\"],[4,[38,1],[\"click\",[30,0,[\"update\"]]],null],[12],[1,\"Update\"],[13],[1,\"\\n  \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"button\"],[4,[38,1],[\"click\",[30,0,[\"delete\"]]],null],[12],[1,\"Delete Message\"],[13],[1,\"\\n\"],[13]],[\"@message\"],false,[\"input\",\"on\"]]",
+    "id": "jfE6OPtE",
+    "block": "[[[10,0],[12],[1,\"\\n    \"],[10,\"form\"],[12],[1,\"\\n        \"],[8,[39,0],[[24,0,\"text-box\"],[24,0,\"light\"],[24,\"maxlength\",\"100\"]],[[\"@value\"],[[30,1,[\"text\"]]]],null],[1,\"\\n        \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"submit\"],[4,[38,1],[\"click\",[30,0,[\"update\"]]],null],[12],[1,\"Update\"],[13],[1,\"\\n        \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"button\"],[4,[38,1],[\"click\",[30,0,[\"delete\"]]],null],[12],[1,\"Delete Message\"],[13],[1,\"\\n    \"],[13],[1,\"\\n\"],[13]],[\"@message\"],false,[\"input\",\"on\"]]",
     "moduleName": "chat-app-site/components/messages/edit-box.hbs",
     "isStrictMode": false
   });
@@ -205,19 +207,21 @@
   const __COLOCATED_TEMPLATE__ = (0, _templateFactory.createTemplateFactory)(
   /*
     <div>
-    <Input
-      class = "text-box"
-      @value={{this.input}}
-      class="light"
-      placeholder="Enter a new message into the log (max. 100 characters)"
-      maxlength="100"
-    />
-    <button type="button" class="submit-button" {{on "click" this.submit}}>Submit</button>
+    <form>
+      <Input
+        class = "text-box"
+        @value={{this.input}}
+        class="light"
+        placeholder="Enter a new message into the log (max. 100 characters)"
+        maxlength="100"
+      />
+      <button type="submit" class="submit-button" {{on "click" this.submit}}>Submit</button>
+    </form>
   </div>
   */
   {
-    "id": "Ksc+qN2c",
-    "block": "[[[10,0],[12],[1,\"\\n  \"],[8,[39,0],[[24,0,\"text-box\"],[24,0,\"light\"],[24,\"placeholder\",\"Enter a new message into the log (max. 100 characters)\"],[24,\"maxlength\",\"100\"]],[[\"@value\"],[[30,0,[\"input\"]]]],null],[1,\"\\n  \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"button\"],[4,[38,1],[\"click\",[30,0,[\"submit\"]]],null],[12],[1,\"Submit\"],[13],[1,\"\\n\"],[13]],[],false,[\"input\",\"on\"]]",
+    "id": "8qd5MNCJ",
+    "block": "[[[10,0],[12],[1,\"\\n  \"],[10,\"form\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"text-box\"],[24,0,\"light\"],[24,\"placeholder\",\"Enter a new message into the log (max. 100 characters)\"],[24,\"maxlength\",\"100\"]],[[\"@value\"],[[30,0,[\"input\"]]]],null],[1,\"\\n    \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"submit\"],[4,[38,1],[\"click\",[30,0,[\"submit\"]]],null],[12],[1,\"Submit\"],[13],[1,\"\\n  \"],[13],[1,\"\\n\"],[13]],[],false,[\"input\",\"on\"]]",
     "moduleName": "chat-app-site/components/messages/submission-box.hbs",
     "isStrictMode": false
   });
@@ -1048,7 +1052,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+920817d3"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+3a65e9d5"});
           }
         
 //# sourceMappingURL=chat-app-site.map

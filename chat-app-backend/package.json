@@ -12,6 +12,8 @@
     "@onehilltech/blueprint": "^4.65.11",
     "@onehilltech/blueprint-gatekeeper": "^4.65.13",
     "cors": "^2.8.5",
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "pug": "^2.0.3"
   },
   "license": "",

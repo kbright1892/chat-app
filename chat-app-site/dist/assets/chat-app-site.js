@@ -1052,7 +1052,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+1138ad84"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+5fc92dc1"});
           }
         
 //# sourceMappingURL=chat-app-site.map

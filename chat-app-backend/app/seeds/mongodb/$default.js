@@ -8,7 +8,7 @@ module.exports = Seed.extend ({
     model () {
         return {
             message: dab.times (50, i => ({
-                text: faker.lorem.sentence(5)
+                text: faker.faker.lorem.sentence(5)
             }))
         }
     }

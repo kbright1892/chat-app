@@ -12,6 +12,8 @@
     "@onehilltech/blueprint": "^4.65.11",
     "@onehilltech/blueprint-mongodb": "^4.65.12",
     "@onehilltech/dab": "^2.11.1",
+    "@fakerjs/faker": "^3.0.0",
+    "lodash": "^4.17.21",
     "cors": "^2.8.5",
     "pug": "^2.0.3"
   },

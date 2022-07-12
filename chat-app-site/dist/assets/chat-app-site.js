@@ -1853,8 +1853,8 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "iecYfsct",
-    "block": "[[[1,[28,[35,0],[\"Welcome to ChatApp\"],null]],[1,\"\\n\"],[8,[39,1],null,null,null],[1,\"\\n\"],[8,[39,2],null,null,null],[1,\"\\nPlaceholder for login\"],[10,\"br\"],[12],[13],[1,\"\\nIf already logged in, user should be taken to new\"],[10,\"br\"],[12],[13],[1,\"\\n\\n\\n\"]],[],false,[\"page-title\",\"gatekeeper-sign-in\",\"gatekeeper-sign-up\"]]",
+    "id": "KET8H2jv",
+    "block": "[[[1,[28,[35,0],[\"Welcome to ChatApp\"],null]],[1,\"\\n\"],[10,0],[14,0,\"login-container\"],[12],[1,\"\\n  \"],[10,0],[12],[1,\"\\n    Sign into Existing Account\\n    \"],[8,[39,1],null,null,null],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,\"br\"],[12],[13],[10,\"br\"],[12],[13],[1,\"\\n  \"],[10,0],[12],[1,\"\\n    Create a New Account\\n    \"],[8,[39,2],null,null,null],[1,\"\\n  \"],[13],[1,\"\\n\"],[13],[1,\"\\n\\n\\n\"]],[],false,[\"page-title\",\"gatekeeper-sign-in\",\"gatekeeper-sign-up\"]]",
     "moduleName": "chat-app-site/templates/index.hbs",
     "isStrictMode": false
   });
@@ -2017,7 +2017,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+0e5903ec"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+c7fb40e2"});
           }
         
 //# sourceMappingURL=chat-app-site.map

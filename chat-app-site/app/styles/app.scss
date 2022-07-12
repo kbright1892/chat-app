@@ -1,0 +1,285 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:300,300italic,400,700,700italic);
+
+/**
+ * Base Elements
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+div,
+span,
+a,
+button {
+  font-family: 'Lato', 'Open Sans', 'Helvetica Neue', 'Segoe UI', Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  background: #f3f3f3;
+}
+
+a {
+  color: #016aba;
+  text-decoration: none;
+}
+
+button {
+  font-size: 100%;
+}
+
+p {
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+/**
+ * Button
+ */
+
+.button {
+  padding: 10px 30px 10px;
+  text-decoration: none;
+  color: #fff;
+  background: #87e4ec;
+  border-radius: 5px;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 0.9;
+  display: inline-block;
+}
+
+.gen-text {
+  text-align: center;
+}
+
+.submit-button {
+  padding: 10px 30px 10px;
+  text-decoration: none;
+  color: #fff;
+  background: #87e4ec;
+  border-radius: 5px;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 0.8;
+  display: inline-flex;
+}
+
+.submit-button:hover {
+  padding: 10px 30px 10px;
+  text-decoration: none;
+  color: #fff;
+  background: #87e4ec;
+  border-radius: 5px;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 1;
+  display: inline-flex;
+}
+
+
+.button:hover {
+  opacity: 1;
+}
+
+.back-button {
+  padding-left: 20px;
+}
+/**
+ * Body Container
+ */
+
+.container {
+  max-width: 80vw;
+  min-height: 95vh;
+  background: #f9f9f9;
+  margin: 0 auto;
+}
+
+.message li {
+  list-style: none;
+  padding: 10px 15px;
+}
+
+
+/**
+ * Top Navigation
+ */
+
+.menu {
+  height: 6em;
+  background-color: #677ae4;
+  background-color: #05526A;
+  background-color: #87e4ec;
+}
+
+.menu h1 {
+  position: relative;
+  padding: 5px 0 0 8px;
+  color: #f9f9f9;
+  font-size: 3em;
+  font-style: italic;
+}
+
+.menu a,
+.menu .links {
+  display: inline-block;
+}
+
+.menu a {
+  text-decoration: none;
+  padding: 0 15px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.menu a:hover,
+.menu a.active {
+  opacity: 1;
+}
+
+.menu .links {
+  padding: 0 21px;
+}
+
+.menu .links a {
+  position: relative;
+  bottom: 5px;
+  font-size: 2em;
+}
+
+.message {
+  margin-top: 15px;
+  background-color: #f6f6f6;
+  padding: 20px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.text-box {
+  background: white;
+  font-size: 18px;
+  padding: 10px;
+  border: 2px solid lightgray;
+  margin: 10px;
+  border-radius: 10px;
+  width: 60vw;
+  height: 30px;
+}
+
+
+
+/**
+ * Utilities
+ */
+
+.light {
+  font-weight: 300;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.hidden {
+  display: none;
+}
+
+.relative {
+  position: relative;
+}
+
+
+.chat-logo {
+  background: url(../assets/images/white-chat-icon-467078.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 5em;
+  width: 5em;
+
+  position: relative;
+  top: 0.5em;
+  right: 1em;
+}
+
+.edit-row{
+  display: inline-flex;
+}
+
+.edit-row .edit-button {
+  padding: 10px 30px 10px;
+  align-self: center;
+  text-decoration: none;
+  color: #fff;
+  background: #87e4ec;
+  border-radius: 5px;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 0.8;
+  display: inline-flex;
+}
+
+.edit-row .edit-button:hover {
+  padding: 10px 30px 10px;
+  align-self: center;
+  text-decoration: none;
+  color: #fff;
+  background: #87e4ec;
+  border-radius: 5px;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 1;
+  display: inline-flex;
+}
+
+.screen-reader{
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px; width: 1px;
+  margin: -1px; padding: 0; border: 0;
+}
+
+.footer {
+  max-width: 80vw;
+  height: 5vh;
+  background: #87e4ec;
+  margin: 0 auto;
+  font-weight: bold;
+  text-align: center;
+  color: #f3f3f3;
+}
+
+.login-container {
+  font-family: arial;
+  font-size: 24px;
+  margin: 10px;
+  width: 50vw;
+  height: 75vh;
+  outline: none;
+  /* Center child horizontally*/
+  display: block;
+  justify-content: center;
+}

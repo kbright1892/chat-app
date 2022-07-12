@@ -6,6 +6,7 @@ const { Schema } = mongodb;
 
 const schema = mongodb.Schema ({
     text: {type: String, required: true, trim: true},
+    user: {type: String, required: true, trim:true}
 });
 
 module.exports = mongodb.resource ('message', schema, 'messages');

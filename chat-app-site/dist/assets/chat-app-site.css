@@ -1,9 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Lato:300,300italic,400,700,700italic);
-
 /**
  * Base Elements
  */
-
 * {
   margin: 0;
   padding: 0;
@@ -21,7 +19,7 @@ div,
 span,
 a,
 button {
-  font-family: 'Lato', 'Open Sans', 'Helvetica Neue', 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-family: "Lato", "Open Sans", "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
   line-height: 1.5;
 }
 
@@ -46,7 +44,6 @@ p {
 /**
  * Button
  */
-
 .button {
   padding: 10px 30px 10px;
   text-decoration: none;
@@ -90,7 +87,6 @@ p {
   display: inline-flex;
 }
 
-
 .button:hover {
   opacity: 1;
 }
@@ -98,10 +94,10 @@ p {
 .back-button {
   padding-left: 20px;
 }
+
 /**
  * Body Container
  */
-
 .container {
   max-width: 80vw;
   min-height: 95vh;
@@ -114,11 +110,9 @@ p {
   padding: 10px 15px;
 }
 
-
 /**
  * Top Navigation
  */
-
 .menu {
   height: 6em;
   background-color: #677ae4;
@@ -183,12 +177,9 @@ p {
   height: 30px;
 }
 
-
-
 /**
  * Utilities
  */
-
 .light {
   font-weight: 300;
 }
@@ -209,20 +200,18 @@ p {
   position: relative;
 }
 
-
 .chat-logo {
   background: url(../assets/images/white-chat-icon-467078.png);
   background-size: contain;
   background-repeat: no-repeat;
   height: 5em;
   width: 5em;
-
   position: relative;
   top: 0.5em;
   right: 1em;
 }
 
-.edit-row{
+.edit-row {
   display: inline-flex;
 }
 
@@ -254,12 +243,15 @@ p {
   display: inline-flex;
 }
 
-.screen-reader{
+.screen-reader {
   position: absolute;
   overflow: hidden;
   clip: rect(0 0 0 0);
-  height: 1px; width: 1px;
-  margin: -1px; padding: 0; border: 0;
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
 }
 
 .footer {
@@ -270,4 +262,16 @@ p {
   font-weight: bold;
   text-align: center;
   color: #f3f3f3;
+}
+
+.login-container {
+  font-family: arial;
+  font-size: 24px;
+  margin: 10px;
+  width: 50vw;
+  height: 75vh;
+  outline: none;
+  /* Center child horizontally*/
+  display: block;
+  justify-content: center;
 }

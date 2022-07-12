@@ -10,4 +10,5 @@ Router.map(function () {
   this.route('about');
   this.route('message', { path: '/messages/:id' });
   this.route('messages');
+  this.route('new', { path: '/messages/new'});
 });

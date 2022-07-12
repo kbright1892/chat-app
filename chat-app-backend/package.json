@@ -10,12 +10,13 @@
   },
   "dependencies": {
     "@onehilltech/blueprint": "^4.65.11",
-    "@onehilltech/blueprint-mongodb": "^4.65.12",
-    "@onehilltech/dab": "^2.11.1",
-    "@fakerjs/faker": "^3.0.0",
-    "lodash": "^4.17.21",
+    "@onehilltech/blueprint-gatekeeper": "^4.65.13",
+    "chai": "^4.3.6",
     "cors": "^2.8.5",
-    "pug": "^2.0.3"
+    "lodash": "^4.17.21",
+    "mocha": "^10.0.0",
+    "pug": "^2.0.3",
+    "superagent": "^8.0.0"
   },
   "license": "",
   "engines": {
@@ -28,6 +29,8 @@
   "devDependencies": {
     "@faker-js/faker": "^7.3.0",
     "@onehilltech/blueprint-cli": "^4.64.1",
-    "@onehilltech/blueprint-testing": "^4.64.1"
+    "@onehilltech/blueprint-testing": "^4.64.1",
+    "@onehilltech/dab": "^2.11.1",
+    "supertest": "^6.2.4"
   }
 }

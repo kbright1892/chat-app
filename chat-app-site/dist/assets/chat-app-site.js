@@ -15,7 +15,20 @@
     }
   });
 });
-;define("chat-app-site/adapters/application", ["exports", "@ember-data/adapter/rest"], function (_exports, _rest) {
+;define("chat-app-site/adapters/account", ["exports", "ember-cli-gatekeeper/adapters/account"], function (_exports, _account) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _account.default;
+    }
+  });
+});
+;define("chat-app-site/adapters/application", ["exports", "@ember-data/adapter/rest", "ember-cli-gatekeeper"], function (_exports, _rest, _emberCliGatekeeper) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -23,18 +36,20 @@
   });
   _exports.default = void 0;
 
+  var _class;
+
   function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-  class ApplicationAdapter extends _rest.default {
+  let ApplicationAdapter = (0, _emberCliGatekeeper.bearer)(_class = class ApplicationAdapter extends _rest.default {
     constructor() {
       super(...arguments);
 
       _defineProperty(this, "host", 'http://localhost:8080');
 
-      _defineProperty(this, "namespace", 'api');
+      _defineProperty(this, "namespace", 'v1');
     }
 
-  }
+  }) || _class;
 
   _exports.default = ApplicationAdapter;
 });
@@ -74,6 +89,500 @@
     enumerable: true,
     get: function () {
       return _emberComponentManager.default;
+    }
+  });
+});
+;define("chat-app-site/components/g-recaptcha-invisible", ["exports", "ember-cli-google-recaptcha/components/g-recaptcha-invisible"], function (_exports, _gRecaptchaInvisible) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gRecaptchaInvisible.default;
+    }
+  });
+});
+;define("chat-app-site/components/g-recaptcha-v2", ["exports", "ember-cli-google-recaptcha/components/g-recaptcha-v2"], function (_exports, _gRecaptchaV) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gRecaptchaV.default;
+    }
+  });
+});
+;define("chat-app-site/components/gatekeeper-account-verified", ["exports", "ember-cli-gatekeeper/components/gatekeeper-account-verified"], function (_exports, _gatekeeperAccountVerified) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperAccountVerified.default;
+    }
+  });
+});
+;define("chat-app-site/components/gatekeeper-client-authenticated-container", ["exports", "ember-cli-gatekeeper/components/gatekeeper-client-authenticated-container"], function (_exports, _gatekeeperClientAuthenticatedContainer) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperClientAuthenticatedContainer.default;
+    }
+  });
+});
+;define("chat-app-site/components/gatekeeper-forgot-password", ["exports", "ember-cli-gatekeeper/components/gatekeeper-forgot-password"], function (_exports, _gatekeeperForgotPassword) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperForgotPassword.default;
+    }
+  });
+});
+;define("chat-app-site/components/gatekeeper-lock-screen", ["exports", "ember-cli-gatekeeper/components/gatekeeper-lock-screen"], function (_exports, _gatekeeperLockScreen) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperLockScreen.default;
+    }
+  });
+});
+;define("chat-app-site/components/gatekeeper-reset-password", ["exports", "ember-cli-gatekeeper/components/gatekeeper-reset-password"], function (_exports, _gatekeeperResetPassword) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperResetPassword.default;
+    }
+  });
+});
+;define("chat-app-site/components/gatekeeper-sign-in-with-recaptcha", ["exports", "ember-cli-gatekeeper/components/gatekeeper-sign-in-with-recaptcha"], function (_exports, _gatekeeperSignInWithRecaptcha) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperSignInWithRecaptcha.default;
+    }
+  });
+});
+;define("chat-app-site/components/gatekeeper-sign-in", ["exports", "ember-cli-gatekeeper/components/gatekeeper-sign-in"], function (_exports, _gatekeeperSignIn) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperSignIn.default;
+    }
+  });
+});
+;define("chat-app-site/components/gatekeeper-sign-up-with-recaptcha", ["exports", "ember-cli-gatekeeper/components/gatekeeper-sign-up-with-recaptcha"], function (_exports, _gatekeeperSignUpWithRecaptcha) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperSignUpWithRecaptcha.default;
+    }
+  });
+});
+;define("chat-app-site/components/gatekeeper-sign-up", ["exports", "ember-cli-gatekeeper/components/gatekeeper-sign-up"], function (_exports, _gatekeeperSignUp) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperSignUp.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-button-link-to", ["exports", "ember-cli-mdc-button/components/mdc-button-link-to"], function (_exports, _mdcButtonLinkTo) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcButtonLinkTo.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-button", ["exports", "ember-cli-mdc-button/components/mdc-button"], function (_exports, _mdcButton) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcButton.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-checkbox-native-control", ["exports", "ember-cli-mdc-checkbox/components/mdc-checkbox-native-control"], function (_exports, _mdcCheckboxNativeControl) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcCheckboxNativeControl.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-checkbox", ["exports", "ember-cli-mdc-checkbox/components/mdc-checkbox"], function (_exports, _mdcCheckbox) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcCheckbox.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-floating-label", ["exports", "ember-cli-mdc-floating-label/components/mdc-floating-label"], function (_exports, _mdcFloatingLabel) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcFloatingLabel.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-form-field", ["exports", "ember-cli-mdc-form-field/components/mdc-form-field"], function (_exports, _mdcFormField) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcFormField.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-form", ["exports", "ember-cli-mdc-form/components/mdc-form"], function (_exports, _mdcForm) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcForm.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-icon-button-icon", ["exports", "ember-cli-mdc-icon-button/components/mdc-icon-button-icon"], function (_exports, _mdcIconButtonIcon) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcIconButtonIcon.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-icon-button-link-to", ["exports", "ember-cli-mdc-icon-button/components/mdc-icon-button-link-to"], function (_exports, _mdcIconButtonLinkTo) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcIconButtonLinkTo.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-icon-button-toggle", ["exports", "ember-cli-mdc-icon-button/components/mdc-icon-button-toggle"], function (_exports, _mdcIconButtonToggle) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcIconButtonToggle.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-icon-button", ["exports", "ember-cli-mdc-icon-button/components/mdc-icon-button"], function (_exports, _mdcIconButton) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcIconButton.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-icon", ["exports", "ember-cli-mdc-icon/components/mdc-icon"], function (_exports, _mdcIcon) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcIcon.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-line-ripple", ["exports", "ember-cli-mdc-line-ripple/components/mdc-line-ripple"], function (_exports, _mdcLineRipple) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcLineRipple.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-notched-outline-leading", ["exports", "ember-cli-mdc-notched-outline/components/mdc-notched-outline-leading"], function (_exports, _mdcNotchedOutlineLeading) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcNotchedOutlineLeading.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-notched-outline-notch", ["exports", "ember-cli-mdc-notched-outline/components/mdc-notched-outline-notch"], function (_exports, _mdcNotchedOutlineNotch) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcNotchedOutlineNotch.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-notched-outline-trailing", ["exports", "ember-cli-mdc-notched-outline/components/mdc-notched-outline-trailing"], function (_exports, _mdcNotchedOutlineTrailing) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcNotchedOutlineTrailing.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-notched-outline", ["exports", "ember-cli-mdc-notched-outline/components/mdc-notched-outline"], function (_exports, _mdcNotchedOutline) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcNotchedOutline.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-password-textfield-with-helper-text", ["exports", "ember-cli-mdc-textfield/components/mdc-password-textfield-with-helper-text"], function (_exports, _mdcPasswordTextfieldWithHelperText) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcPasswordTextfieldWithHelperText.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-password-textfield", ["exports", "ember-cli-mdc-textfield/components/mdc-password-textfield"], function (_exports, _mdcPasswordTextfield) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcPasswordTextfield.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-textarea-with-helper-text", ["exports", "ember-cli-mdc-textfield/components/mdc-textarea-with-helper-text"], function (_exports, _mdcTextareaWithHelperText) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextareaWithHelperText.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-textarea", ["exports", "ember-cli-mdc-textfield/components/mdc-textarea"], function (_exports, _mdcTextarea) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextarea.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-textfield-helper-text", ["exports", "ember-cli-mdc-textfield/components/mdc-textfield-helper-text"], function (_exports, _mdcTextfieldHelperText) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextfieldHelperText.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-textfield-icon", ["exports", "ember-cli-mdc-textfield/components/mdc-textfield-icon"], function (_exports, _mdcTextfieldIcon) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextfieldIcon.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-textfield-input", ["exports", "ember-cli-mdc-textfield/components/mdc-textfield-input"], function (_exports, _mdcTextfieldInput) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextfieldInput.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-textfield-textarea", ["exports", "ember-cli-mdc-textfield/components/mdc-textfield-textarea"], function (_exports, _mdcTextfieldTextarea) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextfieldTextarea.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-textfield-with-helper-text", ["exports", "ember-cli-mdc-textfield/components/mdc-textfield-with-helper-text"], function (_exports, _mdcTextfieldWithHelperText) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextfieldWithHelperText.default;
+    }
+  });
+});
+;define("chat-app-site/components/mdc-textfield", ["exports", "ember-cli-mdc-textfield/components/mdc-textfield"], function (_exports, _mdcTextfield) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextfield.default;
     }
   });
 });
@@ -277,8 +786,13 @@
       <h1>ChatApp</h1>
     </LinkTo>
     <div class="links">
+      <LinkTo @route="new" class="menu-about">
+        New
+      </LinkTo>
+    </div>
+    <div class="links">
       <LinkTo @route="messages" class="menu-about">
-        All Messages
+        All
       </LinkTo>
     </div>
     <div class="links">
@@ -289,8 +803,8 @@
   </nav>
   */
   {
-    "id": "ZhUAoNUZ",
-    "block": "[[[10,\"nav\"],[14,0,\"menu\"],[12],[1,\"\\n  \"],[10,0],[14,0,\"right chat-logo\"],[12],[13],[1,\"\\n  \"],[8,[39,0],[[24,0,\"menu-index\"]],[[\"@route\"],[\"index\"]],[[\"default\"],[[[[1,\"\\n    \"],[10,\"h1\"],[12],[1,\"ChatApp\"],[13],[1,\"\\n  \"]],[]]]]],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"messages\"]],[[\"default\"],[[[[1,\"\\n      All Messages\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"about\"]],[[\"default\"],[[[[1,\"\\n      About\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n\"],[13]],[],false,[\"link-to\"]]",
+    "id": "uuz62gWc",
+    "block": "[[[10,\"nav\"],[14,0,\"menu\"],[12],[1,\"\\n  \"],[10,0],[14,0,\"right chat-logo\"],[12],[13],[1,\"\\n  \"],[8,[39,0],[[24,0,\"menu-index\"]],[[\"@route\"],[\"index\"]],[[\"default\"],[[[[1,\"\\n    \"],[10,\"h1\"],[12],[1,\"ChatApp\"],[13],[1,\"\\n  \"]],[]]]]],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"new\"]],[[\"default\"],[[[[1,\"\\n      New\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"messages\"]],[[\"default\"],[[[[1,\"\\n      All\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"about\"]],[[\"default\"],[[[[1,\"\\n      About\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n\"],[13]],[],false,[\"link-to\"]]",
     "moduleName": "chat-app-site/components/nav-bar.hbs",
     "isStrictMode": false
   });
@@ -298,6 +812,19 @@
   var _default = (0, _component.setComponentTemplate)(__COLOCATED_TEMPLATE__, (0, _templateOnly.default)());
 
   _exports.default = _default;
+});
+;define("chat-app-site/components/test", ["exports", "ember-cli-gatekeeper/components/test"], function (_exports, _test) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _test.default;
+    }
+  });
 });
 ;define("chat-app-site/components/text-box", ["exports", "@ember/component", "@ember/template-factory", "@ember/component/template-only"], function (_exports, _component, _templateFactory, _templateOnly) {
   "use strict";
@@ -424,6 +951,25 @@
   var _default = _pluralize.default;
   _exports.default = _default;
 });
+;define("chat-app-site/helpers/protected-url", ["exports", "ember-cli-gatekeeper/helpers/protected-url"], function (_exports, _protectedUrl) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _protectedUrl.default;
+    }
+  });
+  Object.defineProperty(_exports, "protectedUrl", {
+    enumerable: true,
+    get: function () {
+      return _protectedUrl.protectedUrl;
+    }
+  });
+});
 ;define("chat-app-site/helpers/singularize", ["exports", "ember-inflector/lib/helpers/singularize"], function (_exports, _singularize) {
   "use strict";
 
@@ -471,6 +1017,25 @@
 
   };
   _exports.default = _default;
+});
+;define("chat-app-site/initializers/custom-properties", ["exports", "ember-cli-custom-properties/initializers/custom-properties"], function (_exports, _customProperties) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _customProperties.default;
+    }
+  });
+  Object.defineProperty(_exports, "initialize", {
+    enumerable: true,
+    get: function () {
+      return _customProperties.initialize;
+    }
+  });
 });
 ;define("chat-app-site/initializers/ember-blueprint-data", ["exports", "ember-blueprint-data/initializers/ember-blueprint-data"], function (_exports, _emberBlueprintData) {
   "use strict";
@@ -578,6 +1143,44 @@
   };
   _exports.default = _default;
 });
+;define("chat-app-site/initializers/gatekeeper-session", ["exports", "ember-cli-gatekeeper/initializers/gatekeeper-session"], function (_exports, _gatekeeperSession) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperSession.default;
+    }
+  });
+  Object.defineProperty(_exports, "initialize", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeperSession.initialize;
+    }
+  });
+});
+;define("chat-app-site/initializers/mdc-snackbar", ["exports", "ember-cli-mdc-snackbar/initializers/mdc-snackbar"], function (_exports, _mdcSnackbar) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcSnackbar.default;
+    }
+  });
+  Object.defineProperty(_exports, "initialize", {
+    enumerable: true,
+    get: function () {
+      return _mdcSnackbar.initialize;
+    }
+  });
+});
 ;define("chat-app-site/initializers/model-fragments", ["exports", "ember-data-model-fragments", "ember-data-model-fragments/ext"], function (_exports, _emberDataModelFragments, _ext) {
   "use strict";
 
@@ -612,6 +1215,51 @@
 
   };
   _exports.default = _default;
+});
+;define("chat-app-site/instance-initializers/typography", ["exports", "ember-cli-mdc-typography/instance-initializers/typography"], function (_exports, _typography) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _typography.default;
+    }
+  });
+  Object.defineProperty(_exports, "initialize", {
+    enumerable: true,
+    get: function () {
+      return _typography.initialize;
+    }
+  });
+});
+;define("chat-app-site/models/account-verification", ["exports", "ember-cli-gatekeeper/models/account-verification"], function (_exports, _accountVerification) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _accountVerification.default;
+    }
+  });
+});
+;define("chat-app-site/models/account", ["exports", "ember-cli-gatekeeper/models/account"], function (_exports, _account) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _account.default;
+    }
+  });
 });
 ;define("chat-app-site/models/message", ["exports", "@ember-data/model"], function (_exports, _model) {
   "use strict";
@@ -659,6 +1307,123 @@
     }
   });
 });
+;define("chat-app-site/modifiers/custom-property", ["exports", "ember-cli-custom-properties/modifiers/custom-property"], function (_exports, _customProperty) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _customProperty.default;
+    }
+  });
+});
+;define("chat-app-site/modifiers/did-insert", ["exports", "@ember/render-modifiers/modifiers/did-insert"], function (_exports, _didInsert) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _didInsert.default;
+    }
+  });
+});
+;define("chat-app-site/modifiers/did-update", ["exports", "@ember/render-modifiers/modifiers/did-update"], function (_exports, _didUpdate) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _didUpdate.default;
+    }
+  });
+});
+;define("chat-app-site/modifiers/mdc-elevation", ["exports", "ember-cli-mdc-elevation/modifiers/mdc-elevation"], function (_exports, _mdcElevation) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcElevation.default;
+    }
+  });
+});
+;define("chat-app-site/modifiers/mdc-line-ripple", ["exports", "ember-cli-mdc-line-ripple/modifiers/mdc-line-ripple"], function (_exports, _mdcLineRipple) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcLineRipple.default;
+    }
+  });
+});
+;define("chat-app-site/modifiers/mdc-ripple", ["exports", "ember-cli-mdc-ripple/modifiers/mdc-ripple"], function (_exports, _mdcRipple) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcRipple.default;
+    }
+  });
+});
+;define("chat-app-site/modifiers/mdc-theme", ["exports", "ember-cli-mdc-theme/modifiers/mdc-theme"], function (_exports, _mdcTheme) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTheme.default;
+    }
+  });
+});
+;define("chat-app-site/modifiers/mdc-typography", ["exports", "ember-cli-mdc-typography/modifiers/mdc-typography"], function (_exports, _mdcTypography) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTypography.default;
+    }
+  });
+});
+;define("chat-app-site/modifiers/will-destroy", ["exports", "@ember/render-modifiers/modifiers/will-destroy"], function (_exports, _willDestroy) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _willDestroy.default;
+    }
+  });
+});
 ;define("chat-app-site/router", ["exports", "@ember/routing/router", "chat-app-site/config/environment"], function (_exports, _router, _environment) {
   "use strict";
 
@@ -687,6 +1452,9 @@
       path: '/messages/:id'
     });
     this.route('messages');
+    this.route('new', {
+      path: '/messages/new'
+    });
   });
 });
 ;define("chat-app-site/routes/about", ["exports", "@ember/routing/route"], function (_exports, _route) {
@@ -709,11 +1477,19 @@
   });
   _exports.default = void 0;
 
-  class IndexRoute extends _route.default {}
+  class IndexRoute extends _route.default {
+    /*
+    async model () {
+      // Get all comments for the current user.
+      return this.store.query ('user', { user: this.session.currentUser.id });
+    }
+     */
+  }
 
   _exports.default = IndexRoute;
+  ;
 });
-;define("chat-app-site/routes/message", ["exports", "@ember/routing/route"], function (_exports, _route) {
+;define("chat-app-site/routes/message", ["exports", "@ember/routing/route", "ember-cli-gatekeeper"], function (_exports, _route, _emberCliGatekeeper) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -721,16 +1497,18 @@
   });
   _exports.default = void 0;
 
-  class MessageRoute extends _route.default {
+  var _class;
+
+  let MessageRoute = (0, _emberCliGatekeeper.authenticated)(_class = class MessageRoute extends _route.default {
     async model() {
       return this.store.find('message', this.args.message.id);
     }
 
-  }
+  }) || _class;
 
   _exports.default = MessageRoute;
 });
-;define("chat-app-site/routes/messages", ["exports", "@ember/routing/route"], function (_exports, _route) {
+;define("chat-app-site/routes/messages", ["exports", "@ember/routing/route", "ember-cli-gatekeeper"], function (_exports, _route, _emberCliGatekeeper) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -738,14 +1516,30 @@
   });
   _exports.default = void 0;
 
-  class MessagesRoute extends _route.default {
+  var _class;
+
+  let MessagesRoute = (0, _emberCliGatekeeper.authenticated)(_class = class MessagesRoute extends _route.default {
     async model() {
       return this.store.findAll('message');
     }
 
-  }
+  }) || _class;
 
   _exports.default = MessagesRoute;
+});
+;define("chat-app-site/routes/new", ["exports", "@ember/routing/route", "ember-cli-gatekeeper"], function (_exports, _route, _emberCliGatekeeper) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _class;
+
+  let NewRoute = (0, _emberCliGatekeeper.authenticated)(_class = class NewRoute extends _route.default {}) || _class;
+
+  _exports.default = NewRoute;
 });
 ;define("chat-app-site/serializers/-default", ["exports", "@ember-data/serializer/json"], function (_exports, _json) {
   "use strict";
@@ -783,6 +1577,32 @@
     enumerable: true,
     get: function () {
       return _rest.default;
+    }
+  });
+});
+;define("chat-app-site/serializers/account-verification", ["exports", "ember-cli-gatekeeper/serializers/account-verification"], function (_exports, _accountVerification) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _accountVerification.default;
+    }
+  });
+});
+;define("chat-app-site/serializers/account", ["exports", "ember-cli-gatekeeper/serializers/account"], function (_exports, _account) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _account.default;
     }
   });
 });
@@ -824,6 +1644,84 @@
     }
   });
 });
+;define("chat-app-site/services/g-recaptcha-v3", ["exports", "ember-cli-google-recaptcha/services/g-recaptcha-v3"], function (_exports, _gRecaptchaV) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gRecaptchaV.default;
+    }
+  });
+});
+;define("chat-app-site/services/g-recaptcha", ["exports", "ember-cli-google-recaptcha/services/g-recaptcha"], function (_exports, _gRecaptcha) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gRecaptcha.default;
+    }
+  });
+});
+;define("chat-app-site/services/gatekeeper", ["exports", "ember-cli-gatekeeper/services/gatekeeper"], function (_exports, _gatekeeper) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _gatekeeper.default;
+    }
+  });
+});
+;define("chat-app-site/services/local-storage", ["exports", "@onehilltech/ember-cli-storage/services/local-storage"], function (_exports, _localStorage) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _localStorage.default;
+    }
+  });
+});
+;define("chat-app-site/services/mdc-textarea-configurator", ["exports", "ember-cli-mdc-textfield/services/mdc-textarea-configurator"], function (_exports, _mdcTextareaConfigurator) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextareaConfigurator.default;
+    }
+  });
+});
+;define("chat-app-site/services/mdc-textfield-configurator", ["exports", "ember-cli-mdc-textfield/services/mdc-textfield-configurator"], function (_exports, _mdcTextfieldConfigurator) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _mdcTextfieldConfigurator.default;
+    }
+  });
+});
 ;define("chat-app-site/services/page-title-list", ["exports", "ember-page-title/services/page-title-list"], function (_exports, _pageTitleList) {
   "use strict";
 
@@ -847,6 +1745,58 @@
     enumerable: true,
     get: function () {
       return _pageTitle.default;
+    }
+  });
+});
+;define("chat-app-site/services/session-storage", ["exports", "@onehilltech/ember-cli-storage/services/session-storage"], function (_exports, _sessionStorage) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _sessionStorage.default;
+    }
+  });
+});
+;define("chat-app-site/services/session", ["exports", "ember-cli-gatekeeper/services/session"], function (_exports, _session) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _session.default;
+    }
+  });
+});
+;define("chat-app-site/services/snackbar", ["exports", "ember-cli-mdc-snackbar/services/snackbar"], function (_exports, _snackbar) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _snackbar.default;
+    }
+  });
+});
+;define("chat-app-site/services/storage", ["exports", "@onehilltech/ember-cli-storage/services/storage"], function (_exports, _storage) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(_exports, "default", {
+    enumerable: true,
+    get: function () {
+      return _storage.default;
     }
   });
 });
@@ -905,8 +1855,8 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "fB/yCXMm",
-    "block": "[[[1,[28,[35,0],[\"Welcome to ChatApp\"],null]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[],[]]]]],[1,\"\\n\"],[10,0],[14,0,\"gen-text\"],[12],[10,\"h3\"],[12],[1,\"Click \\\"All Messages\\\" to view the history\"],[13],[13],[1,\"\\n\\n\"]],[],false,[\"page-title\",\"messages/submission-box\"]]",
+    "id": "gNi2JwwA",
+    "block": "[[[10,0],[14,0,\"login-container\"],[12],[1,\"\\n  \"],[10,0],[12],[1,\"\\n    Sign into Existing Account\\n    \"],[8,[39,0],null,null,null],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,\"br\"],[12],[13],[10,\"br\"],[12],[13],[1,\"\\n  \"],[10,0],[12],[1,\"\\n    Create a New Account\\n    \"],[8,[39,1],null,null,null],[1,\"\\n  \"],[13],[1,\"\\n\"],[13]],[],false,[\"gatekeeper-sign-in\",\"gatekeeper-sign-up\"]]",
     "moduleName": "chat-app-site/templates/index.hbs",
     "isStrictMode": false
   });
@@ -942,6 +1892,23 @@
     "id": "cKBHFLp/",
     "block": "[[[1,[28,[35,0],[\"Messages\"],null]],[1,\"\\n\"],[42,[28,[37,2],[[28,[37,2],[[30,1]],null]],null],null,[[[1,\"  \"],[10,0],[14,0,\"edit-row\"],[12],[1,\"\\n    \"],[8,[39,3],null,[[\"@message\"],[[30,2]]],null],[1,\"\\n    \"],[8,[39,4],[[24,0,\"edit-button\"]],[[\"@route\",\"@model\"],[\"message\",[30,2]]],[[\"default\"],[[[[1,\"Edit\"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n\"]],[2]],null]],[\"@model\",\"message\"],false,[\"page-title\",\"each\",\"-track-array\",\"message\",\"link-to\"]]",
     "moduleName": "chat-app-site/templates/messages.hbs",
+    "isStrictMode": false
+  });
+
+  _exports.default = _default;
+});
+;define("chat-app-site/templates/new", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _default = (0, _templateFactory.createTemplateFactory)({
+    "id": "FeMM5781",
+    "block": "[[[1,[28,[35,0],[\"New Message\"],null]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[],[]]]]],[1,\"\\n\"],[10,0],[14,0,\"gen-text\"],[12],[10,\"h3\"],[12],[1,\"Click \\\"All Messages\\\" to view the history\"],[13],[13]],[],false,[\"page-title\",\"messages/submission-box\"]]",
+    "moduleName": "chat-app-site/templates/new.hbs",
     "isStrictMode": false
   });
 
@@ -1052,7 +2019,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+76105895"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+89c16e95"});
           }
         
 //# sourceMappingURL=chat-app-site.map

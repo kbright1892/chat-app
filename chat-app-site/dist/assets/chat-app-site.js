@@ -1476,13 +1476,12 @@
   _exports.default = void 0;
 
   class IndexRoute extends _route.default {
-    async model() {
+    /*
+    async model () {
       // Get all comments for the current user.
-      return this.store.query('user', {
-        user: this.session.currentUser.id
-      });
+      return this.store.query ('user', { user: this.session.currentUser.id });
     }
-
+    */
   }
 
   _exports.default = IndexRoute;
@@ -2018,7 +2017,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+eb721bec"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+0e5903ec"});
           }
         
 //# sourceMappingURL=chat-app-site.map

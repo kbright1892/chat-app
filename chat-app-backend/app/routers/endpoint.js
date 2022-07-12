@@ -8,7 +8,7 @@ const { Router } = blueprint;
 
 module.exports = Router.extend ({
     specification: {
-        '/v1': {
+        '/': {
             use: [cors ({
                 origin: env !== 'production' ? true : null
             })]

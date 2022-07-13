@@ -1478,7 +1478,7 @@
 
   _exports.default = AboutRoute;
 });
-;define("chat-app-site/routes/index", ["exports", "@ember/routing/route"], function (_exports, _route) {
+;define("chat-app-site/routes/index", ["exports", "@ember/routing/route", "ember-cli-gatekeeper"], function (_exports, _route, _emberCliGatekeeper) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1486,14 +1486,16 @@
   });
   _exports.default = void 0;
 
-  class IndexRoute extends _route.default {
+  var _class;
+
+  let IndexRoute = (0, _emberCliGatekeeper.authenticated)(_class = class IndexRoute extends _route.default {
     /*
     async model () {
       // Get all comments for the current user.
       return this.store.query ('user', { user: this.session.currentUser.id });
     }
      */
-  }
+  }) || _class;
 
   _exports.default = IndexRoute;
   ;
@@ -2028,7 +2030,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+1ae8ab2d"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+86ff4584"});
           }
         
 //# sourceMappingURL=chat-app-site.map

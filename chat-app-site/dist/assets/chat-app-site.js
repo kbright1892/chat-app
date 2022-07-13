@@ -2028,7 +2028,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+384ef22d"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+1ae8ab2d"});
           }
         
 //# sourceMappingURL=chat-app-site.map

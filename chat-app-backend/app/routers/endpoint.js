@@ -16,7 +16,7 @@ module.exports = Router.extend ({
 
         // Let's protect the /v1 routes.
         '/v1': {
-            //policy: 'gatekeeper.auth.bearer'
+            policy: 'gatekeeper.auth.bearer'
         }
     }
 });

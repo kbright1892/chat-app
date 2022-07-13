@@ -6,7 +6,7 @@ module.exports = {
         // This is the base options for all token generators.
         $: {
             issuer: 'gatekeeper',
-            expiresIn: '30m',
+            expiresIn: '1h',
             algorithm: 'HS256',
             secret: 'ssshhh'
         }

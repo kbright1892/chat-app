@@ -6,7 +6,7 @@ module.exports = {
             uri: 'mongodb://localhost:27017/chat-app',
             seed: true,    // seed the database connection [default=false]
             options: {            // mongoose connection options
-
+                useUnifiedTopology: true
             }
         }
     }

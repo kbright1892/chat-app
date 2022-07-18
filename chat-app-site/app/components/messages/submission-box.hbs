@@ -1,5 +1,5 @@
 <div>
-  <form>
+  <form {{on "submit" this.submit}}>
     <Input
       class = "text-box"
       @value={{this.input}}
@@ -7,6 +7,6 @@
       placeholder="Enter a new message into the log (max. 100 characters)"
       maxlength="100"
     />
-    <button type="submit" class="submit-button" {{on "click" this.submit}}>Submit</button>
+    <button type="submit" class="submit-button">Submit</button>
   </form>
 </div>

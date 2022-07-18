@@ -7,11 +7,12 @@ export default class SubmissionBoxComponent extends Component {
   @service store;
   @tracked input = '';
 
-  @action submit() {
+  @action submit(ev) {
+    ev.preventDefault ();
     if (this.input != '') {
       let newSubmission = this.store.createRecord('message', {
         text: this.input,
-        user: this.session.currentUser,
+        user: this.session.currentUser.id,
       });
       newSubmission.save();
       this.input = '';

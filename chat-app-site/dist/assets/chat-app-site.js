@@ -716,7 +716,7 @@
   const __COLOCATED_TEMPLATE__ = (0, _templateFactory.createTemplateFactory)(
   /*
     <div>
-    <form>
+    <form {{on "submit" this.submit}}>
       <Input
         class = "text-box"
         @value={{this.input}}
@@ -724,13 +724,13 @@
         placeholder="Enter a new message into the log (max. 100 characters)"
         maxlength="100"
       />
-      <button type="submit" class="submit-button" {{on "click" this.submit}}>Submit</button>
+      <button type="submit" class="submit-button">Submit</button>
     </form>
   </div>
   */
   {
-    "id": "8qd5MNCJ",
-    "block": "[[[10,0],[12],[1,\"\\n  \"],[10,\"form\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"text-box\"],[24,0,\"light\"],[24,\"placeholder\",\"Enter a new message into the log (max. 100 characters)\"],[24,\"maxlength\",\"100\"]],[[\"@value\"],[[30,0,[\"input\"]]]],null],[1,\"\\n    \"],[11,\"button\"],[24,0,\"submit-button\"],[24,4,\"submit\"],[4,[38,1],[\"click\",[30,0,[\"submit\"]]],null],[12],[1,\"Submit\"],[13],[1,\"\\n  \"],[13],[1,\"\\n\"],[13]],[],false,[\"input\",\"on\"]]",
+    "id": "Cjylrx6z",
+    "block": "[[[10,0],[12],[1,\"\\n  \"],[11,\"form\"],[4,[38,0],[\"submit\",[30,0,[\"submit\"]]],null],[12],[1,\"\\n    \"],[8,[39,1],[[24,0,\"text-box\"],[24,0,\"light\"],[24,\"placeholder\",\"Enter a new message into the log (max. 100 characters)\"],[24,\"maxlength\",\"100\"]],[[\"@value\"],[[30,0,[\"input\"]]]],null],[1,\"\\n    \"],[10,\"button\"],[14,0,\"submit-button\"],[14,4,\"submit\"],[12],[1,\"Submit\"],[13],[1,\"\\n  \"],[13],[1,\"\\n\"],[13]],[],false,[\"on\",\"input\"]]",
     "moduleName": "chat-app-site/components/messages/submission-box.hbs",
     "isStrictMode": false
   });
@@ -744,11 +744,13 @@
       _initializerDefineProperty(this, "input", _descriptor2, this);
     }
 
-    submit() {
+    submit(ev) {
+      ev.preventDefault();
+
       if (this.input != '') {
         let newSubmission = this.store.createRecord('message', {
           text: this.input,
-          user: this.session.currentUser
+          user: this.session.currentUser.id
         });
         newSubmission.save();
         this.input = '';

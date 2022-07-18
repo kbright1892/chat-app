@@ -695,7 +695,7 @@
   _exports.default = MessagesEditBoxComponent;
   (0, _component.setComponentTemplate)(__COLOCATED_TEMPLATE__, MessagesEditBoxComponent);
 });
-;define("chat-app-site/components/messages/submission-box", ["exports", "@ember/component", "@ember/template-factory", "@glimmer/component", "@glimmer/tracking", "@ember/object", "@ember/service"], function (_exports, _component, _templateFactory, _component2, _tracking, _object, _service) {
+;define("chat-app-site/components/messages/submission-box", ["exports", "@ember/component", "@ember/template-factory", "@glimmer/component", "@glimmer/tracking", "@ember/object", "@ember/service", "ember-cli-gatekeeper"], function (_exports, _component, _templateFactory, _component2, _tracking, _object, _service, _emberCliGatekeeper) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -703,7 +703,7 @@
   });
   _exports.default = void 0;
 
-  var _class, _descriptor, _descriptor2;
+  var _class, _class2, _descriptor, _descriptor2, _descriptor3;
 
   function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -735,13 +735,15 @@
     "isStrictMode": false
   });
 
-  let SubmissionBoxComponent = (_class = class SubmissionBoxComponent extends _component2.default {
+  let SubmissionBoxComponent = (0, _emberCliGatekeeper.authenticated)(_class = (_class2 = class SubmissionBoxComponent extends _component2.default {
     constructor() {
       super(...arguments);
 
       _initializerDefineProperty(this, "store", _descriptor, this);
 
-      _initializerDefineProperty(this, "input", _descriptor2, this);
+      _initializerDefineProperty(this, "session", _descriptor2, this);
+
+      _initializerDefineProperty(this, "input", _descriptor3, this);
     }
 
     submit(ev) {
@@ -757,19 +759,25 @@
       }
     }
 
-  }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "store", [_service.inject], {
+  }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "store", [_service.inject], {
     configurable: true,
     enumerable: true,
     writable: true,
     initializer: null
-  }), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "input", [_tracking.tracked], {
+  }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "session", [_service.inject], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "input", [_tracking.tracked], {
     configurable: true,
     enumerable: true,
     writable: true,
     initializer: function () {
       return '';
     }
-  }), _applyDecoratedDescriptor(_class.prototype, "submit", [_object.action], Object.getOwnPropertyDescriptor(_class.prototype, "submit"), _class.prototype)), _class);
+  }), _applyDecoratedDescriptor(_class2.prototype, "submit", [_object.action], Object.getOwnPropertyDescriptor(_class2.prototype, "submit"), _class2.prototype)), _class2)) || _class;
+
   _exports.default = SubmissionBoxComponent;
   (0, _component.setComponentTemplate)(__COLOCATED_TEMPLATE__, SubmissionBoxComponent);
 });
@@ -2138,7 +2146,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+e4926a11"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+544abcb0"});
           }
         
 //# sourceMappingURL=chat-app-site.map

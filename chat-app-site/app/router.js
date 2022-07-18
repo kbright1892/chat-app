@@ -7,8 +7,14 @@ export default class Router extends EmberRouter {
 }
 
 Router.map(function () {
-  this.route('about');
-  this.route('message', { path: '/messages/:id' });
-  this.route('messages');
-  this.route('new', { path: '/messages/new'});
+  this.route('messages', function () {
+    this.route('message', { path: '/:id' });
+    this.route('messages', { path: '/all' });
+    this.route('new');
+    this.route('about');
+  });
+
+  this.route('auth', function () {
+    this.route('sign-in');
+  });
 });

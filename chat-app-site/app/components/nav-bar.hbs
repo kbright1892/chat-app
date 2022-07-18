@@ -1,21 +1,24 @@
 <nav class="menu">
   <div class = "right chat-logo"></div>
-  <LinkTo @route="index" class="menu-index">
+  <LinkTo @route="messages.new" class="menu-index">
     <h1>ChatApp</h1>
   </LinkTo>
   <div class="links">
-    <LinkTo @route="new" class="menu-about">
+    <LinkTo @route="messages.new" class="menu-about">
       New
     </LinkTo>
   </div>
   <div class="links">
-    <LinkTo @route="messages" class="menu-about">
+    <LinkTo @route="messages.messages" class="menu-about">
       All
     </LinkTo>
   </div>
   <div class="links">
-    <LinkTo @route="about" class="menu-about">
+    <LinkTo @route="messages.about" class="menu-about">
       About
     </LinkTo>
   </div>
+  {{#if this.session.isSignedIn}}
+    <button type="button" {{ on "click" this.logOut }} >LogOut</button>
+  {{/if}}
 </nav>

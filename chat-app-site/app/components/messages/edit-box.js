@@ -12,13 +12,13 @@ export default class MessagesEditBoxComponent extends Component {
   @action update() {
     let message = this.store.peekRecord('message', this.args.message.id);
     message.save();
-    this.router.transitionTo('messages');
+    this.router.transitionTo('messages.messages');
   }
 
   @action delete() {
     let message = this.store.peekRecord('message', this.args.message.id);
     message.deleteRecord();
     message.save();
-    this.router.transitionTo('messages');
+    this.router.transitionTo('messages.messages');
   }
 }

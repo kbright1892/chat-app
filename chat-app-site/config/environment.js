@@ -3,14 +3,14 @@
 module.exports = function (environment) {
   let ENV = {
     modulePrefix: 'chat-app-site',
-    environment,
+    environment: 'development',
     rootURL: '/',
     locationType: 'auto',
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
         // e.g. EMBER_NATIVE_DECORATOR_SUPPORT: true
-        'ds-improved-ajax': true
+        'ds-improved-ajax': true,
       },
       EXTEND_PROTOTYPES: {
         // Prevent Ember Data from overriding Date.parse.
@@ -20,11 +20,13 @@ module.exports = function (environment) {
 
     gatekeeper: {
       baseUrl: 'http://localhost:8080/gatekeeper',
+      signInRoute: '/auth/sign-in',
+      startRoute: '/messages/new',
 
       tokenOptions: {
         client_id: '62ce1c049e350f0d4d77dbb5',
-        client_secret: 'secret'
-      }
+        client_secret: 'secret',
+      },
     },
 
     APP: {

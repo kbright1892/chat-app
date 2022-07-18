@@ -666,14 +666,14 @@
     update() {
       let message = this.store.peekRecord('message', this.args.message.id);
       message.save();
-      this.router.transitionTo('messages');
+      this.router.transitionTo('messages.messages');
     }
 
     delete() {
       let message = this.store.peekRecord('message', this.args.message.id);
       message.deleteRecord();
       message.save();
-      this.router.transitionTo('messages');
+      this.router.transitionTo('messages.messages');
     }
 
   }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "store", [_service.inject], {
@@ -695,7 +695,7 @@
   _exports.default = MessagesEditBoxComponent;
   (0, _component.setComponentTemplate)(__COLOCATED_TEMPLATE__, MessagesEditBoxComponent);
 });
-;define("chat-app-site/components/messages/submission-box", ["exports", "@ember/component", "@ember/template-factory", "@glimmer/component", "@glimmer/tracking", "@ember/object", "@ember/service", "ember-cli-gatekeeper"], function (_exports, _component, _templateFactory, _component2, _tracking, _object, _service, _emberCliGatekeeper) {
+;define("chat-app-site/components/messages/submission-box", ["exports", "@ember/component", "@ember/template-factory", "@glimmer/component", "@glimmer/tracking", "@ember/object", "@ember/service"], function (_exports, _component, _templateFactory, _component2, _tracking, _object, _service) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -703,7 +703,7 @@
   });
   _exports.default = void 0;
 
-  var _class, _class2, _descriptor, _descriptor2;
+  var _class, _descriptor, _descriptor2;
 
   function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -735,7 +735,7 @@
     "isStrictMode": false
   });
 
-  let SubmissionBoxComponent = (0, _emberCliGatekeeper.authenticated)(_class = (_class2 = class SubmissionBoxComponent extends _component2.default {
+  let SubmissionBoxComponent = (_class = class SubmissionBoxComponent extends _component2.default {
     constructor() {
       super(...arguments);
 
@@ -748,31 +748,30 @@
       if (this.input != '') {
         let newSubmission = this.store.createRecord('message', {
           text: this.input,
-          user: req.user
+          user: this.session.currentUser
         });
         newSubmission.save();
         this.input = '';
       }
     }
 
-  }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "store", [_service.inject], {
+  }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "store", [_service.inject], {
     configurable: true,
     enumerable: true,
     writable: true,
     initializer: null
-  }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "input", [_tracking.tracked], {
+  }), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "input", [_tracking.tracked], {
     configurable: true,
     enumerable: true,
     writable: true,
     initializer: function () {
       return '';
     }
-  }), _applyDecoratedDescriptor(_class2.prototype, "submit", [_object.action], Object.getOwnPropertyDescriptor(_class2.prototype, "submit"), _class2.prototype)), _class2)) || _class;
-
+  }), _applyDecoratedDescriptor(_class.prototype, "submit", [_object.action], Object.getOwnPropertyDescriptor(_class.prototype, "submit"), _class.prototype)), _class);
   _exports.default = SubmissionBoxComponent;
   (0, _component.setComponentTemplate)(__COLOCATED_TEMPLATE__, SubmissionBoxComponent);
 });
-;define("chat-app-site/components/nav-bar", ["exports", "@ember/component", "@ember/template-factory", "@ember/component/template-only"], function (_exports, _component, _templateFactory, _templateOnly) {
+;define("chat-app-site/components/nav-bar", ["exports", "@ember/component", "@ember/template-factory", "@glimmer/component", "@ember/service", "@ember/object"], function (_exports, _component, _templateFactory, _component2, _service, _object) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -780,40 +779,77 @@
   });
   _exports.default = void 0;
 
+  var _class, _descriptor, _descriptor2;
+
+  function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+  function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
   const __COLOCATED_TEMPLATE__ = (0, _templateFactory.createTemplateFactory)(
   /*
     <nav class="menu">
     <div class = "right chat-logo"></div>
-    <LinkTo @route="index" class="menu-index">
+    <LinkTo @route="messages.new" class="menu-index">
       <h1>ChatApp</h1>
     </LinkTo>
     <div class="links">
-      <LinkTo @route="new" class="menu-about">
+      <LinkTo @route="messages.new" class="menu-about">
         New
       </LinkTo>
     </div>
     <div class="links">
-      <LinkTo @route="messages" class="menu-about">
+      <LinkTo @route="messages.messages" class="menu-about">
         All
       </LinkTo>
     </div>
     <div class="links">
-      <LinkTo @route="about" class="menu-about">
+      <LinkTo @route="messages.about" class="menu-about">
         About
       </LinkTo>
     </div>
+    {{#if this.session.isSignedIn}}
+      <button type="button" {{ on "click" this.logOut }} >LogOut</button>
+    {{/if}}
   </nav>
   */
   {
-    "id": "uuz62gWc",
-    "block": "[[[10,\"nav\"],[14,0,\"menu\"],[12],[1,\"\\n  \"],[10,0],[14,0,\"right chat-logo\"],[12],[13],[1,\"\\n  \"],[8,[39,0],[[24,0,\"menu-index\"]],[[\"@route\"],[\"index\"]],[[\"default\"],[[[[1,\"\\n    \"],[10,\"h1\"],[12],[1,\"ChatApp\"],[13],[1,\"\\n  \"]],[]]]]],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"new\"]],[[\"default\"],[[[[1,\"\\n      New\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"messages\"]],[[\"default\"],[[[[1,\"\\n      All\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"about\"]],[[\"default\"],[[[[1,\"\\n      About\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n\"],[13]],[],false,[\"link-to\"]]",
+    "id": "JpkmYruM",
+    "block": "[[[10,\"nav\"],[14,0,\"menu\"],[12],[1,\"\\n  \"],[10,0],[14,0,\"right chat-logo\"],[12],[13],[1,\"\\n  \"],[8,[39,0],[[24,0,\"menu-index\"]],[[\"@route\"],[\"messages.new\"]],[[\"default\"],[[[[1,\"\\n    \"],[10,\"h1\"],[12],[1,\"ChatApp\"],[13],[1,\"\\n  \"]],[]]]]],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"messages.new\"]],[[\"default\"],[[[[1,\"\\n      New\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"messages.messages\"]],[[\"default\"],[[[[1,\"\\n      All\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,0],[14,0,\"links\"],[12],[1,\"\\n    \"],[8,[39,0],[[24,0,\"menu-about\"]],[[\"@route\"],[\"messages.about\"]],[[\"default\"],[[[[1,\"\\n      About\\n    \"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n\"],[41,[30,0,[\"session\",\"isSignedIn\"]],[[[1,\"    \"],[11,\"button\"],[24,4,\"button\"],[4,[38,2],[\"click\",[30,0,[\"logOut\"]]],null],[12],[1,\"LogOut\"],[13],[1,\"\\n\"]],[]],null],[13]],[],false,[\"link-to\",\"if\",\"on\"]]",
     "moduleName": "chat-app-site/components/nav-bar.hbs",
     "isStrictMode": false
   });
 
-  var _default = (0, _component.setComponentTemplate)(__COLOCATED_TEMPLATE__, (0, _templateOnly.default)());
+  let NavBarComponent = (_class = class NavBarComponent extends _component2.default {
+    constructor() {
+      super(...arguments);
 
-  _exports.default = _default;
+      _initializerDefineProperty(this, "session", _descriptor, this);
+
+      _initializerDefineProperty(this, "router", _descriptor2, this);
+    }
+
+    async logOut() {
+      await this.session.signOut();
+      this.router.transitionTo('auth.sign-in');
+    }
+
+  }, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "session", [_service.inject], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  }), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "router", [_service.inject], {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    initializer: null
+  }), _applyDecoratedDescriptor(_class.prototype, "logOut", [_object.action], Object.getOwnPropertyDescriptor(_class.prototype, "logOut"), _class.prototype)), _class);
+  _exports.default = NavBarComponent;
+  (0, _component.setComponentTemplate)(__COLOCATED_TEMPLATE__, NavBarComponent);
 });
 ;define("chat-app-site/components/test", ["exports", "ember-cli-gatekeeper/components/test"], function (_exports, _test) {
   "use strict";
@@ -1456,17 +1492,22 @@
 
   _exports.default = Router;
   Router.map(function () {
-    this.route('about');
-    this.route('message', {
-      path: '/messages/:id'
+    this.route('messages', function () {
+      this.route('message', {
+        path: '/:id'
+      });
+      this.route('messages', {
+        path: '/all'
+      });
+      this.route('new');
+      this.route('about');
     });
-    this.route('messages');
-    this.route('new', {
-      path: '/messages/new'
+    this.route('auth', function () {
+      this.route('sign-in');
     });
   });
 });
-;define("chat-app-site/routes/about", ["exports", "@ember/routing/route"], function (_exports, _route) {
+;define("chat-app-site/routes/auth", ["exports", "@ember/routing/route", "ember-cli-gatekeeper"], function (_exports, _route, _emberCliGatekeeper) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1474,9 +1515,23 @@
   });
   _exports.default = void 0;
 
-  class AboutRoute extends _route.default {}
+  var _class;
 
-  _exports.default = AboutRoute;
+  let AuthRoute = (0, _emberCliGatekeeper.unauthenticated)(_class = class AuthRoute extends _route.default {}) || _class;
+
+  _exports.default = AuthRoute;
+});
+;define("chat-app-site/routes/auth/sign-in", ["exports", "@ember/routing/route"], function (_exports, _route) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  class AuthSignInRoute extends _route.default {}
+
+  _exports.default = AuthSignInRoute;
 });
 ;define("chat-app-site/routes/index", ["exports", "@ember/routing/route", "ember-cli-gatekeeper"], function (_exports, _route, _emberCliGatekeeper) {
   "use strict";
@@ -1489,18 +1544,15 @@
   var _class;
 
   let IndexRoute = (0, _emberCliGatekeeper.authenticated)(_class = class IndexRoute extends _route.default {
-    /*
-    async model () {
-      // Get all comments for the current user.
-      return this.store.query ('user', { user: this.session.currentUser.id });
+    model() {
+      this.replaceWith('messages.new');
     }
-     */
+
   }) || _class;
 
   _exports.default = IndexRoute;
-  ;
 });
-;define("chat-app-site/routes/message", ["exports", "@ember/routing/route", "ember-cli-gatekeeper"], function (_exports, _route, _emberCliGatekeeper) {
+;define("chat-app-site/routes/messages", ["exports", "@ember/routing/route", "ember-cli-gatekeeper", "@glimmer/component", "@glimmer/tracking", "@ember/object", "@ember/service"], function (_exports, _route, _emberCliGatekeeper, _component, _tracking, _object, _service) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1510,16 +1562,40 @@
 
   var _class;
 
-  let MessageRoute = (0, _emberCliGatekeeper.authenticated)(_class = class MessageRoute extends _route.default {
+  let MessagesRoute = (0, _emberCliGatekeeper.authenticated)(_class = class MessagesRoute extends _route.default {}) || _class;
+
+  _exports.default = MessagesRoute;
+});
+;define("chat-app-site/routes/messages/about", ["exports", "@ember/routing/route"], function (_exports, _route) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  class AboutRoute extends _route.default {}
+
+  _exports.default = AboutRoute;
+});
+;define("chat-app-site/routes/messages/message", ["exports", "@ember/routing/route"], function (_exports, _route) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  class MessageRoute extends _route.default {
     async model() {
       return this.store.find('message', this.args.message.id);
     }
 
-  }) || _class;
+  }
 
   _exports.default = MessageRoute;
 });
-;define("chat-app-site/routes/messages", ["exports", "@ember/routing/route", "ember-cli-gatekeeper"], function (_exports, _route, _emberCliGatekeeper) {
+;define("chat-app-site/routes/messages/messages", ["exports", "@ember/routing/route"], function (_exports, _route) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1527,18 +1603,16 @@
   });
   _exports.default = void 0;
 
-  var _class;
-
-  let MessagesRoute = (0, _emberCliGatekeeper.authenticated)(_class = class MessagesRoute extends _route.default {
+  class MessagesRoute extends _route.default {
     async model() {
       return this.store.findAll('message');
     }
 
-  }) || _class;
+  }
 
   _exports.default = MessagesRoute;
 });
-;define("chat-app-site/routes/new", ["exports", "@ember/routing/route", "ember-cli-gatekeeper"], function (_exports, _route, _emberCliGatekeeper) {
+;define("chat-app-site/routes/messages/new", ["exports", "@ember/routing/route"], function (_exports, _route) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1546,9 +1620,7 @@
   });
   _exports.default = void 0;
 
-  var _class;
-
-  let NewRoute = (0, _emberCliGatekeeper.authenticated)(_class = class NewRoute extends _route.default {}) || _class;
+  class NewRoute extends _route.default {}
 
   _exports.default = NewRoute;
 });
@@ -1823,23 +1895,6 @@
 
   _exports.default = MyStore;
 });
-;define("chat-app-site/templates/about", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
-  "use strict";
-
-  Object.defineProperty(_exports, "__esModule", {
-    value: true
-  });
-  _exports.default = void 0;
-
-  var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "hS3TuL8Q",
-    "block": "[[[1,[28,[35,0],[\"About\"],null]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[[1,\"What do you want me to say?\"]],[]]]]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[[1,\"You clicked the About link, didn't you?\"]],[]]]]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[[1,\"You're just here to talk to yourself, anyway.\"]],[]]]]]],[],false,[\"page-title\",\"text-box\"]]",
-    "moduleName": "chat-app-site/templates/about.hbs",
-    "isStrictMode": false
-  });
-
-  _exports.default = _default;
-});
 ;define("chat-app-site/templates/application", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
   "use strict";
 
@@ -1849,15 +1904,15 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "bXikB4pV",
-    "block": "[[[10,0],[14,0,\"container\"],[12],[1,\"\\n  \"],[8,[39,0],null,null,null],[1,\"\\n  \"],[10,0],[14,0,\"body\"],[12],[1,\"\\n    \"],[46,[28,[37,2],null,null],null,null,null],[1,\"\\n  \"],[13],[1,\"\\n\"],[13],[1,\"\\n\"],[10,0],[14,0,\"footer\"],[12],[1,\"\\n  Built by Kristopher Bright\\n\"],[13]],[],false,[\"nav-bar\",\"component\",\"-outlet\"]]",
+    "id": "PSA5JjTe",
+    "block": "[[[10,0],[14,0,\"container\"],[12],[1,\"\\n  \"],[10,0],[14,0,\"body\"],[12],[1,\"\\n    \"],[46,[28,[37,1],null,null],null,null,null],[1,\"\\n  \"],[13],[1,\"\\n\"],[13],[1,\"\\n\"],[10,0],[14,0,\"footer\"],[12],[1,\"\\n  Built by Kristopher Bright\\n\"],[13]],[],false,[\"component\",\"-outlet\"]]",
     "moduleName": "chat-app-site/templates/application.hbs",
     "isStrictMode": false
   });
 
   _exports.default = _default;
 });
-;define("chat-app-site/templates/index", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
+;define("chat-app-site/templates/auth", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1866,15 +1921,15 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "gNi2JwwA",
-    "block": "[[[10,0],[14,0,\"login-container\"],[12],[1,\"\\n  \"],[10,0],[12],[1,\"\\n    Sign into Existing Account\\n    \"],[8,[39,0],null,null,null],[1,\"\\n  \"],[13],[1,\"\\n  \"],[10,\"br\"],[12],[13],[10,\"br\"],[12],[13],[1,\"\\n  \"],[10,0],[12],[1,\"\\n    Create a New Account\\n    \"],[8,[39,1],null,null,null],[1,\"\\n  \"],[13],[1,\"\\n\"],[13]],[],false,[\"gatekeeper-sign-in\",\"gatekeeper-sign-up\"]]",
-    "moduleName": "chat-app-site/templates/index.hbs",
+    "id": "3fEBpDG6",
+    "block": "[[[46,[28,[37,1],null,null],null,null,null]],[],false,[\"component\",\"-outlet\"]]",
+    "moduleName": "chat-app-site/templates/auth.hbs",
     "isStrictMode": false
   });
 
   _exports.default = _default;
 });
-;define("chat-app-site/templates/message", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
+;define("chat-app-site/templates/auth/sign-in", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1883,9 +1938,9 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "5ZuqFN42",
-    "block": "[[[1,[28,[35,0],[\"Edit Message\"],null]],[1,\"\\n\"],[8,[39,1],null,[[\"@message\"],[[30,1]]],null],[1,\"\\n\"],[10,0],[14,0,\"back-button\"],[12],[1,\"\\n  \"],[8,[39,2],[[24,0,\"submit-button\"]],[[\"@route\"],[\"messages\"]],[[\"default\"],[[[[1,\"Back\"]],[]]]]],[1,\"\\n\"],[13],[1,\"\\n\"]],[\"@model\"],false,[\"page-title\",\"messages/edit-box\",\"link-to\"]]",
-    "moduleName": "chat-app-site/templates/message.hbs",
+    "id": "leD3UNO5",
+    "block": "[[[1,[28,[35,0],[\"SignIn\"],null]],[1,\"\\n\"],[8,[39,1],null,null,null]],[],false,[\"page-title\",\"gatekeeper-sign-in\"]]",
+    "moduleName": "chat-app-site/templates/auth/sign-in.hbs",
     "isStrictMode": false
   });
 
@@ -1900,15 +1955,15 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "cKBHFLp/",
-    "block": "[[[1,[28,[35,0],[\"Messages\"],null]],[1,\"\\n\"],[42,[28,[37,2],[[28,[37,2],[[30,1]],null]],null],null,[[[1,\"  \"],[10,0],[14,0,\"edit-row\"],[12],[1,\"\\n    \"],[8,[39,3],null,[[\"@message\"],[[30,2]]],null],[1,\"\\n    \"],[8,[39,4],[[24,0,\"edit-button\"]],[[\"@route\",\"@model\"],[\"message\",[30,2]]],[[\"default\"],[[[[1,\"Edit\"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n\"]],[2]],null]],[\"@model\",\"message\"],false,[\"page-title\",\"each\",\"-track-array\",\"message\",\"link-to\"]]",
+    "id": "nv7dUoKl",
+    "block": "[[[10,0],[14,0,\"container\"],[12],[1,\"\\n  \"],[8,[39,0],null,null,null],[1,\"\\n  \"],[10,0],[14,0,\"body\"],[12],[1,\"\\n    \"],[46,[28,[37,2],null,null],null,null,null],[1,\"\\n  \"],[13],[1,\"\\n\"],[13],[1,\"\\n\"]],[],false,[\"nav-bar\",\"component\",\"-outlet\"]]",
     "moduleName": "chat-app-site/templates/messages.hbs",
     "isStrictMode": false
   });
 
   _exports.default = _default;
 });
-;define("chat-app-site/templates/new", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
+;define("chat-app-site/templates/messages/about", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1917,9 +1972,60 @@
   _exports.default = void 0;
 
   var _default = (0, _templateFactory.createTemplateFactory)({
-    "id": "FeMM5781",
-    "block": "[[[1,[28,[35,0],[\"New Message\"],null]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[],[]]]]],[1,\"\\n\"],[10,0],[14,0,\"gen-text\"],[12],[10,\"h3\"],[12],[1,\"Click \\\"All Messages\\\" to view the history\"],[13],[13]],[],false,[\"page-title\",\"messages/submission-box\"]]",
-    "moduleName": "chat-app-site/templates/new.hbs",
+    "id": "FPu7tlSY",
+    "block": "[[[1,[28,[35,0],[\"About\"],null]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[[1,\"What do you want me to say?\"]],[]]]]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[[1,\"You clicked the About link, didn't you?\"]],[]]]]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[[1,\"You're just here to talk to yourself, anyway.\"]],[]]]]]],[],false,[\"page-title\",\"text-box\"]]",
+    "moduleName": "chat-app-site/templates/messages/about.hbs",
+    "isStrictMode": false
+  });
+
+  _exports.default = _default;
+});
+;define("chat-app-site/templates/messages/message", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _default = (0, _templateFactory.createTemplateFactory)({
+    "id": "kBeg1ehc",
+    "block": "[[[1,[28,[35,0],[\"Edit Message\"],null]],[1,\"\\n\"],[8,[39,1],null,[[\"@message\"],[[30,1]]],null],[1,\"\\n\"],[10,0],[14,0,\"back-button\"],[12],[1,\"\\n  \"],[8,[39,2],[[24,0,\"submit-button\"]],[[\"@route\"],[\"messages\"]],[[\"default\"],[[[[1,\"Back\"]],[]]]]],[1,\"\\n\"],[13],[1,\"\\n\"]],[\"@model\"],false,[\"page-title\",\"messages/edit-box\",\"link-to\"]]",
+    "moduleName": "chat-app-site/templates/messages/message.hbs",
+    "isStrictMode": false
+  });
+
+  _exports.default = _default;
+});
+;define("chat-app-site/templates/messages/messages", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _default = (0, _templateFactory.createTemplateFactory)({
+    "id": "hJuWBcpI",
+    "block": "[[[1,[28,[35,0],[\"Messages\"],null]],[1,\"\\n\"],[42,[28,[37,2],[[28,[37,2],[[30,1]],null]],null],null,[[[1,\"  \"],[10,0],[14,0,\"edit-row\"],[12],[1,\"\\n    \"],[8,[39,3],null,[[\"@message\"],[[30,2]]],null],[1,\"\\n    \"],[8,[39,4],[[24,0,\"edit-button\"]],[[\"@route\",\"@model\"],[\"messages.message\",[30,2]]],[[\"default\"],[[[[1,\"Edit\"]],[]]]]],[1,\"\\n  \"],[13],[1,\"\\n\"]],[2]],null]],[\"@model\",\"message\"],false,[\"page-title\",\"each\",\"-track-array\",\"message\",\"link-to\"]]",
+    "moduleName": "chat-app-site/templates/messages/messages.hbs",
+    "isStrictMode": false
+  });
+
+  _exports.default = _default;
+});
+;define("chat-app-site/templates/messages/new", ["exports", "@ember/template-factory"], function (_exports, _templateFactory) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _default = (0, _templateFactory.createTemplateFactory)({
+    "id": "pPKp024Z",
+    "block": "[[[1,[28,[35,0],[\"New Message\"],null]],[1,\"\\n\"],[8,[39,1],null,null,[[\"default\"],[[[],[]]]]],[1,\"\\n\"],[10,0],[14,0,\"gen-text\"],[12],[10,\"h3\"],[12],[1,\"Click \\\"All\\\" to view the history\"],[13],[13]],[],false,[\"page-title\",\"messages/submission-box\"]]",
+    "moduleName": "chat-app-site/templates/messages/new.hbs",
     "isStrictMode": false
   });
 
@@ -2030,7 +2136,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+86ff4584"});
+            require("chat-app-site/app")["default"].create({"name":"chat-app-site","version":"0.0.0+e4926a11"});
           }
         
 //# sourceMappingURL=chat-app-site.map

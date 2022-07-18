@@ -297,6 +297,28 @@ define("chat-app-site/tests/unit/routes/about-test", ["qunit", "ember-qunit"], f
     });
   });
 });
+define("chat-app-site/tests/unit/routes/auth-test", ["qunit", "ember-qunit"], function (_qunit, _emberQunit) {
+  "use strict";
+
+  (0, _qunit.module)('Unit | Route | auth', function (hooks) {
+    (0, _emberQunit.setupTest)(hooks);
+    (0, _qunit.test)('it exists', function (assert) {
+      let route = this.owner.lookup('route:auth');
+      assert.ok(route);
+    });
+  });
+});
+define("chat-app-site/tests/unit/routes/auth/sign-in-test", ["qunit", "ember-qunit"], function (_qunit, _emberQunit) {
+  "use strict";
+
+  (0, _qunit.module)('Unit | Route | auth/sign-in', function (hooks) {
+    (0, _emberQunit.setupTest)(hooks);
+    (0, _qunit.test)('it exists', function (assert) {
+      let route = this.owner.lookup('route:auth/sign-in');
+      assert.ok(route);
+    });
+  });
+});
 define("chat-app-site/tests/unit/routes/index-test", ["qunit", "ember-qunit"], function (_qunit, _emberQunit) {
   "use strict";
 

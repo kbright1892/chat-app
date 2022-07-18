@@ -1,7 +1,6 @@
-{{page-title "Messages"}}
-{{#each @model as |message|}}
-  <div class="edit-row">
-    <Message @message={{message}} />
-    <LinkTo class="edit-button" @route="message" @model={{message}}>Edit</LinkTo>
+<div class="container">
+  <NavBar />
+  <div class="body">
+    {{outlet}}
   </div>
-{{/each}}
+</div>
